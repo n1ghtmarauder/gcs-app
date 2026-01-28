@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GCS | Guinea Cargo Services</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{--primary:#1a5f4a;--primary-light:#238b6a;--primary-dark:#0f3d2f;--accent:#e8a838;--danger:#c44536;--danger-light:#f8d7d4;--success:#2e7d5a;--success-light:#d4edda;--bg-dark:#0d1f1a;--bg-main:#f7f9f8;--bg-card:#fff;--text-primary:#1a2e28;--text-secondary:#5a6b65;--text-muted:#8a9a94;--border:#d8e0dc;--border-light:#e8eeeb;--radius-sm:6px;--radius-md:10px;--radius-lg:16px}
+    *{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Sans',sans-serif;background:var(--bg-main);color:var(--text-primary);min-height:100vh}
+    .login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--bg-dark) 0%,var(--primary-dark) 100%);padding:20px}
+    .login-container{background:var(--bg-card);border-radius:var(--radius-lg);width:100%;max-width:420px;overflow:hidden}
+    .login-header{background:var(--bg-dark);padding:32px;text-align:center}.login-header h1{font-size:22px;color:#fff;margin-bottom:4px}.login-header h1 span{color:var(--accent)}.login-header p{color:rgba(255,255,255,0.6);font-size:12px;text-transform:uppercase;letter-spacing:1px}
+    .login-body{padding:32px}.login-tabs{display:flex;gap:4px;background:var(--bg-main);padding:4px;border-radius:var(--radius-md);margin-bottom:24px}.login-tab{flex:1;padding:10px;border:none;background:transparent;border-radius:var(--radius-sm);font-size:14px;font-weight:600;color:var(--text-secondary);cursor:pointer;font-family:inherit}.login-tab.active{background:var(--bg-card);color:var(--primary)}
+    .form-group{margin-bottom:20px}.form-label{display:block;font-size:13px;font-weight:600;margin-bottom:8px}.form-input{width:100%;padding:12px 16px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:14px;font-family:inherit}.form-input:focus{outline:none;border-color:var(--primary)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 24px;border-radius:var(--radius-md);font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:inherit;width:100%}.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-light)}.btn-secondary{background:var(--bg-main);color:var(--text-primary);border:1px solid var(--border)}
+    .error-message,.success-message{padding:12px;border-radius:var(--radius-md);font-size:13px;margin-bottom:20px;display:none}.error-message{background:var(--danger-light);color:var(--danger)}.success-message{background:var(--success-light);color:var(--success)}.error-message.show,.success-message.show{display:block}
+    .spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+    .app-container,.docs-screen{display:none}.app-container.show,.docs-screen.show{display:block}.login-screen.hidden{display:none}
+    .docs-screen{min-height:100vh;background:var(--bg-main);padding:20px}.docs-container{max-width:800px;margin:0 auto}.docs-header{text-align:center;padding:32px 0;border-bottom:1px solid var(--border);margin-bottom:32px}.docs-header h1{font-size:28px;color:var(--primary);margin-bottom:8px}
+    .doc-card{background:var(--bg-card);border-radius:var(--radius-lg);border:1px solid var(--border-light);margin-bottom:20px;overflow:hidden}.doc-card-header{padding:20px 24px;background:var(--bg-main);border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center}.doc-card-header h3{font-size:16px}
+    .doc-status{font-size:12px;padding:4px 12px;border-radius:20px;font-weight:600}.doc-status.pending{background:var(--danger-light);color:var(--danger)}.doc-status.signed{background:var(--success-light);color:var(--success)}
+    .doc-card-body{padding:24px;max-height:300px;overflow-y:auto;font-size:13px;line-height:1.7;color:var(--text-secondary)}.doc-card-body h4{color:var(--text-primary);margin:16px 0 8px;font-size:14px}.doc-card-body ul{margin-left:20px;margin-bottom:12px}
+    .doc-card-footer{padding:16px 24px;background:var(--bg-main);border-top:1px solid var(--border-light);display:flex;gap:12px;align-items:center}
+    .signature-input{flex:1;padding:12px 16px;border:2px dashed var(--border);border-radius:var(--radius-md);font-family:'Space Mono',monospace;font-size:16px;text-align:center}.signature-input:focus{outline:none;border-color:var(--primary);border-style:solid}
+    .checkbox-group{display:flex;align-items:flex-start;gap:12px}.checkbox-group input{width:20px;height:20px;cursor:pointer}.checkbox-group label{font-size:13px;cursor:pointer}
+    .progress-bar{height:8px;background:var(--border);border-radius:4px;margin-bottom:24px;overflow:hidden}.progress-fill{height:100%;background:var(--primary);transition:width 0.3s}.progress-text{font-size:13px;color:var(--text-secondary);margin-bottom:8px}
+    .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;background:var(--bg-dark);padding:24px 0;z-index:100;display:flex;flex-direction:column}.logo{padding:20px 24px 28px;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:24px}.logo h1{font-size:20px;color:#fff}.logo h1 span{color:var(--accent)}.logo p{font-size:10px;color:rgba(255,255,255,0.5);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+    .role-badge{display:inline-block;background:var(--accent);color:var(--bg-dark);font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:8px;text-transform:uppercase}
+    .nav-section{padding:0 12px}.nav-item{display:flex;align-items:center;gap:12px;padding:12px 16px;color:rgba(255,255,255,0.7);border-radius:var(--radius-md);cursor:pointer;font-size:14px;margin-bottom:4px}.nav-item:hover{background:rgba(255,255,255,0.08);color:#fff}.nav-item.active{background:var(--primary);color:#fff}.nav-item svg{width:20px;height:20px}.nav-badge{margin-left:auto;background:var(--accent);color:var(--bg-dark);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px}.admin-only{display:none}
+    .sidebar-footer{margin-top:auto;padding:24px;border-top:1px solid rgba(255,255,255,0.1)}.user-info{margin-bottom:16px}.user-info .name{font-size:13px;font-weight:600;color:#fff}.user-info .email{font-size:11px;color:rgba(255,255,255,0.5)}.logout-btn{width:100%;padding:10px;background:rgba(255,255,255,0.1);border:none;border-radius:var(--radius-md);color:rgba(255,255,255,0.7);font-size:13px;cursor:pointer}.logout-btn:hover{background:rgba(255,255,255,0.15);color:#fff}
+    .main{margin-left:260px;min-height:100vh}.header{background:var(--bg-card);border-bottom:1px solid var(--border);padding:20px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}.header h2{font-size:22px}.header p{font-size:13px;color:var(--text-secondary);margin-top:2px}.header-actions{display:flex;gap:12px}.content{padding:32px}
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:32px}.stat-card{background:var(--bg-card);border-radius:var(--radius-lg);padding:24px;border:1px solid var(--border-light)}.stat-card.highlight{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);border:none}.stat-card.highlight .stat-label,.stat-card.highlight .stat-value{color:#fff}.stat-label{font-size:13px;color:var(--text-secondary);margin-bottom:8px}.stat-value{font-size:28px;font-weight:700;font-family:'Space Mono',monospace}
+    .card{background:var(--bg-card);border-radius:var(--radius-lg);border:1px solid var(--border-light);overflow:hidden;margin-bottom:24px}.card-header{padding:20px 24px;border-bottom:1px solid var(--border-light)}.card-header h3{font-size:16px}
+    table{width:100%;border-collapse:collapse}th{text-align:left;padding:14px 16px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-secondary);background:var(--bg-main);border-bottom:1px solid var(--border)}td{padding:16px;font-size:14px;border-bottom:1px solid var(--border-light)}tr:hover{background:var(--bg-main)}
+    .customer-cell{display:flex;align-items:center;gap:12px}.customer-avatar{width:36px;height:36px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px}.customer-info .name{font-weight:600}.customer-info .id{font-size:12px;color:var(--text-muted);font-family:'Space Mono',monospace}
+    .status-badge{display:inline-flex;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600}.status-badge.received{background:var(--success-light);color:var(--success)}.weight-cell{font-family:'Space Mono',monospace;font-weight:600}.value-cell{font-family:'Space Mono',monospace;color:var(--success);font-weight:600}
+    .action-btn{padding:6px 12px;border:1px solid var(--border);background:var(--bg-card);border-radius:var(--radius-sm);cursor:pointer;font-size:12px}.action-btn:hover{background:var(--bg-main)}.action-btn.danger{color:var(--danger);border-color:var(--danger-light)}.action-btn.danger:hover{background:var(--danger-light)}
+    .modal-overlay{position:fixed;inset:0;background:rgba(13,31,26,0.6);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}.modal-overlay.active{display:flex}.modal{background:var(--bg-card);border-radius:var(--radius-lg);width:100%;max-width:600px;max-height:90vh;overflow:hidden}.modal-header{padding:24px;border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between}.modal-header h3{font-size:18px}.modal-close{width:36px;height:36px;border-radius:50%;border:none;background:var(--bg-main);cursor:pointer;font-size:18px}.modal-close:hover{background:var(--danger-light);color:var(--danger)}.modal-body{padding:24px;overflow-y:auto;max-height:calc(90vh - 160px)}.modal-footer{padding:20px 24px;border-top:1px solid var(--border-light);display:flex;justify-content:flex-end;gap:12px;background:var(--bg-main)}
+    .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}.form-group.full-width{grid-column:span 2}textarea.form-input{resize:vertical;min-height:80px}
+    .totals-row{display:flex;justify-content:flex-end;gap:32px;padding:20px 24px;background:var(--bg-main);border-top:2px solid var(--border)}.total-item{text-align:right}.total-item label{font-size:12px;color:var(--text-secondary);text-transform:uppercase}.total-item .value{font-size:20px;font-weight:700;font-family:'Space Mono',monospace}.total-item .value.primary{color:var(--primary)}
+    .page{display:none}.page.active{display:block}.filters{display:flex;gap:12px;margin-bottom:20px}.filter-select{padding:8px 16px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;background:var(--bg-card)}
+    .welcome-card{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);border-radius:var(--radius-lg);padding:32px;color:#fff;margin-bottom:24px}.welcome-card h2{font-size:24px;margin-bottom:8px}.welcome-card p{opacity:0.8}
+    .loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,0.9);display:flex;align-items:center;justify-content:center;z-index:1000}.loading-overlay .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--primary)}.loading-overlay.hidden{display:none}
+    @media(max-width:768px){.sidebar{transform:translateX(-100%)}.main{margin-left:0}.stats-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.form-group.full-width{grid-column:span 1}}
+  </style>
+</head>
+<body>
+  <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+  
+  <!-- LOGIN SCREEN -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-container">
+      <div class="login-header"><h1>GC<span>S</span></h1><h1>Guinea Cargo Services</h1><p>Shipping Portal</p></div>
+      <div class="login-body">
+        <div class="login-tabs"><button class="login-tab active" onclick="showLoginTab('signin')">Sign In</button><button class="login-tab" onclick="showLoginTab('signup')">Sign Up</button></div>
+        <div id="errorMessage" class="error-message"></div><div id="successMessage" class="success-message"></div>
+        <form id="signinForm" onsubmit="handleSignIn(event)"><div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="signinEmail" required></div><div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" id="signinPassword" required></div><button type="submit" class="btn btn-primary" id="signinBtn">Sign In</button></form>
+        <form id="signupForm" style="display:none" onsubmit="handleSignUp(event)"><div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-input" id="signupName" required></div><div class="form-group"><label class="form-label">Phone</label><input type="tel" class="form-input" id="signupPhone" required></div><div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="signupEmail" required></div><div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" id="signupPassword" minlength="6" required></div><button type="submit" class="btn btn-primary" id="signupBtn">Create Account</button></form>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOCUMENT SIGNING SCREEN -->
+  <div class="docs-screen" id="docsScreen">
+    <div class="docs-container">
+      <div class="docs-header"><h1>Required Documents</h1><p>Please review and sign to continue</p></div>
+      <div class="progress-text">Documents agreed: <span id="docsProgress">0</span> of 3</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      
+      <div class="doc-card"><div class="doc-card-header"><h3>1. Terms and Conditions</h3><span class="doc-status pending" id="doc1Status">Pending</span></div><div class="doc-card-body"><p><strong>GUINEA CARGO SERVICES - TERMS AND CONDITIONS</strong></p><h4>1. Services</h4><p>GCS provides freight consolidation and forwarding services from the USA to Guinea, Conakry.</p><h4>2. Rates and Payment</h4><p>Rates calculated by weight or volume. Payment required before departure.</p><h4>3. Packing</h4><p>Shipper responsible for proper packing. GCS not liable for damage from inadequate packaging.</p><h4>4. Transit Time</h4><p>Estimates are guidance only. Not liable for delays from customs, weather, or other factors.</p><h4>5. Customs</h4><p>Recipient responsible for all duties, taxes, and clearance fees in Guinea.</p></div><div class="doc-card-footer"><div class="checkbox-group"><input type="checkbox" id="doc1Check" onchange="checkDoc(1)"><label for="doc1Check">I agree to the Terms and Conditions</label></div></div></div>
+      
+      <div class="doc-card"><div class="doc-card-header"><h3>2. Shipper Authorization</h3><span class="doc-status pending" id="doc2Status">Pending</span></div><div class="doc-card-body"><p><strong>SHIPPER AUTHORIZATION</strong></p><p>I authorize Guinea Cargo Services to:</p><ul><li>Act as my forwarding agent for export control and customs</li><li>Prepare and sign shipping documents on my behalf</li><li>Make customs entries, declarations, and certificates</li><li>Arrange transportation to the destination</li></ul><p>I declare all information provided is accurate and I am authorized to ship these goods.</p></div><div class="doc-card-footer"><div class="checkbox-group"><input type="checkbox" id="doc2Check" onchange="checkDoc(2)"><label for="doc2Check">I authorize GCS to act on my behalf</label></div></div></div>
+      
+      <div class="doc-card"><div class="doc-card-header"><h3>3. Liability Waiver and Prohibited Items</h3><span class="doc-status pending" id="doc3Status">Pending</span></div><div class="doc-card-body"><p><strong>LIABILITY LIMITATION</strong></p><ul><li>GCS liability limited to $100 per shipment or declared value (whichever less)</li><li>Not liable for: acts of God, war, customs seizure, improper packing</li><li>Additional cargo insurance available upon request</li></ul><h4>Prohibited Items Declaration</h4><p>I confirm shipments will NOT contain: hazardous materials, explosives, illegal drugs, weapons/firearms, currency, perishable food (unless arranged), live animals, counterfeit goods, or items prohibited by US export or Guinea import law.</p></div><div class="doc-card-footer"><div class="checkbox-group"><input type="checkbox" id="doc3Check" onchange="checkDoc(3)"><label for="doc3Check">I understand liability limits and confirm no prohibited items</label></div></div></div>
+      
+      <div class="doc-card" id="signatureCard" style="display:none"><div class="doc-card-header"><h3>Electronic Signature</h3></div><div class="doc-card-body"><p>By typing your full legal name, you electronically sign all documents above.</p><p style="margin-top:16px"><strong>Date:</strong> <span id="signDate"></span></p></div><div class="doc-card-footer"><input type="text" class="signature-input" id="signatureInput" placeholder="Type your full legal name"><button class="btn btn-primary" style="width:auto" onclick="submitSignature()">Sign and Continue</button></div></div>
+      
+      <div style="text-align:center;padding:32px"><button class="btn btn-secondary" onclick="handleLogout()" style="width:auto;padding:12px 32px">Cancel</button></div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div class="app-container" id="appContainer">
+    <aside class="sidebar">
+      <div class="logo"><h1>GC<span>S</span><span class="role-badge" id="roleBadge">Customer</span></h1><p>Shipping Portal</p></div>
+      <nav class="nav-section">
+        <a class="nav-item active" data-page="dashboard"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Dashboard</a>
+        <a class="nav-item admin-only" data-page="customers"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Customers<span class="nav-badge" id="customerCount">0</span></a>
+        <a class="nav-item" data-page="inventory"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg><span id="navInventoryText">My Items</span><span class="nav-badge" id="inventoryCount">0</span></a>
+        <a class="nav-item" data-page="documents"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Documents</a>
+      </nav>
+      <div class="sidebar-footer"><div class="user-info"><div class="name" id="userName">User</div><div class="email" id="userEmail">-</div></div><button class="logout-btn" onclick="handleLogout()">Sign Out</button></div>
+    </aside>
+    
+    <main class="main">
+      <!-- DASHBOARD PAGE -->
+      <div class="page active" id="dashboard">
+        <header class="header"><div><h2>Dashboard</h2><p>Welcome to Guinea Cargo Services</p></div><div class="header-actions"><button class="btn btn-primary" onclick="openModal('itemModal')">Add Item</button></div></header>
+        <div class="content">
+          <div class="welcome-card"><h2 id="welcomeText">Welcome!</h2><p id="welcomeSubtext">Manage your shipments</p></div>
+          <div class="stats-grid">
+            <div class="stat-card highlight"><div class="stat-label">Total Weight</div><div class="stat-value" id="statWeight">0 lbs</div></div>
+            <div class="stat-card"><div class="stat-label" id="statCustomersLabel">Items</div><div class="stat-value" id="statCustomers">0</div></div>
+            <div class="stat-card"><div class="stat-label">Total Value</div><div class="stat-value" id="statValue">$0</div></div>
+            <div class="stat-card"><div class="stat-label">Items</div><div class="stat-value" id="statItems">0</div></div>
+          </div>
+          <div class="card admin-only" id="adminRecentCustomers"><div class="card-header"><h3>Recent Customers</h3></div><table><thead><tr><th>Customer</th><th>Items</th><th>Weight</th><th>Value</th><th>Docs</th></tr></thead><tbody id="dashboardTable"></tbody></table></div>
+          <div class="card" id="customerRecentItems"><div class="card-header"><h3>My Recent Items</h3></div><table><thead><tr><th>ID</th><th>Description</th><th>Category</th><th>Weight</th><th>Value</th><th>Status</th></tr></thead><tbody id="myItemsTable"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- CUSTOMERS PAGE (Admin Only) -->
+      <div class="page" id="customers">
+        <header class="header"><div><h2>All Customers</h2><p>Manage customer accounts</p></div></header>
+        <div class="content"><div class="card"><table><thead><tr><th>Customer</th><th>Phone</th><th>Items</th><th>Weight</th><th>Value</th><th>Docs</th></tr></thead><tbody id="customersTable"></tbody></table></div></div>
+      </div>
+
+      <!-- INVENTORY PAGE -->
+      <div class="page" id="inventory">
+        <header class="header"><div><h2 id="inventoryTitle">My Items</h2><p id="inventorySubtitle">Track your items</p></div><div class="header-actions"><button class="btn btn-secondary" onclick="exportCSV()">Export CSV</button><button class="btn btn-primary" onclick="openModal('itemModal')">Add Item</button><button class="btn btn-primary" id="submitInventoryBtn" style="background:var(--accent);display:none" onclick="submitInventory()">Submit Final Inventory</button></div></header>
+        <div class="content">
+          <div class="filters admin-only"><select class="filter-select" id="filterCustomer" onchange="renderInventory()"><option value="">All Customers</option></select></div>
+          <div class="filters"><select class="filter-select" id="filterCategory" onchange="renderInventory()"><option value="">All Categories</option><option value="electronics">Electronics</option><option value="clothing">Clothing</option><option value="appliances">Appliances</option><option value="household">Household</option><option value="other">Other</option></select></div>
+          <div class="card"><table><thead><tr><th>ID</th><th class="admin-only">Customer</th><th>Description</th><th>Category</th><th>Weight</th><th>Value</th><th>Actions</th></tr></thead><tbody id="inventoryTable"></tbody></table><div class="totals-row"><div class="total-item"><label>Items</label><div class="value" id="totalItems">0</div></div><div class="total-item"><label>Weight</label><div class="value" id="totalWeight">0 lbs</div></div><div class="total-item"><label>Value</label><div class="value primary" id="totalValue">$0</div></div></div></div>
+        </div>
+      </div>
+
+      <!-- DOCUMENTS PAGE -->
+      <div class="page" id="documents">
+        <header class="header"><div><h2>My Documents</h2><p>View and download signed agreements</p></div></header>
+        <div class="content"><div class="card"><div class="card-header"><h3>Signed Documents</h3></div><table><thead><tr><th>Document</th><th>Signed Date</th><th>Signature</th><th>Actions</th></tr></thead><tbody id="docsTable"></tbody></table></div></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ADD ITEM MODAL -->
+  <div class="modal-overlay" id="itemModal">
+    <div class="modal">
+      <div class="modal-header"><h3>Add Item</h3><button class="modal-close" onclick="closeModal('itemModal')">X</button></div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group full-width admin-only"><label class="form-label">Customer</label><select class="form-input" id="itemCustomer"></select></div>
+          <div class="form-group full-width"><label class="form-label">Description *</label><input type="text" class="form-input" id="itemDesc" placeholder="e.g. Samsung 55 inch TV"></div>
+          <div class="form-group"><label class="form-label">Category</label><select class="form-input" id="itemCategory"><option value="electronics">Electronics</option><option value="clothing">Clothing</option><option value="appliances">Appliances</option><option value="household">Household</option><option value="other">Other</option></select></div>
+          <div class="form-group"><label class="form-label">Quantity</label><input type="number" class="form-input" id="itemQty" value="1" min="1"></div>
+          <div class="form-group"><label class="form-label">Weight (lbs)</label><input type="number" class="form-input" id="itemWeight" value="0" step="0.1"></div>
+          <div class="form-group"><label class="form-label">Value ($)</label><input type="number" class="form-input" id="itemValue" value="0" step="0.01"></div>
+          <div class="form-group full-width"><label class="form-label">Notes</label><textarea class="form-input" id="itemNotes" placeholder="Optional notes"></textarea></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('itemModal')">Cancel</button><button class="btn btn-primary" onclick="saveItem()">Add Item</button></div>
+    </div>
+  </div>
+
+  <script>
+    // ==================== CONFIGURATION ====================
+    var SUPABASE_URL = 'https://usxkawrvasiidlsludjc.supabase.co';
+    var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzeGthd3J2YXNpaWRsc2x1ZGpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1Nzg5MjMsImV4cCI6MjA4NTE1NDkyM30.AAkyRqAywxkXv3aO0uNIf7RuG1lCxrcS89wHJKqlunQ';
+
+    // ==================== STATE ====================
+    var sb = null;
+    var currentUser = null;
+    var userRole = 'customer';
+    var userProfile = null;
+    var customers = [];
+    var inventory = [];
+    var signedDocs = [];
+    var docsChecked = {1: false, 2: false, 3: false};
+
+    // ==================== INITIALIZATION ====================
+    function initApp() {
+      if (typeof window.supabase === 'undefined') {
+        hideLoading();
+        alert('Could not load Supabase. Please refresh.');
+        return;
+      }
+      
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      
+      sb.auth.getSession().then(function(r) {
+        if (r.data.session) {
+          currentUser = r.data.session.user;
+          loadUserProfile();
+        } else {
+          hideLoading();
+        }
+      });
+      
+      sb.auth.onAuthStateChange(function(event, session) {
+        if (event === 'SIGNED_IN' && session) {
+          currentUser = session.user;
+          loadUserProfile();
+        } else if (event === 'SIGNED_OUT') {
+          currentUser = null;
+          userRole = 'customer';
+          userProfile = null;
+          customers = [];
+          inventory = [];
+          signedDocs = [];
+          hideAll();
+          document.getElementById('loginScreen').classList.remove('hidden');
+        }
+      });
+    }
+
+    // ==================== USER PROFILE ====================
+    function loadUserProfile() {
+      sb.from('profiles').select('*').eq('id', currentUser.id).single().then(function(r) {
+        if (r.data) {
+          userProfile = r.data;
+          userRole = r.data.role || 'customer';
+        } else {
+          userProfile = null;
+          userRole = 'customer';
+        }
+        
+        // Admin skips document signing
+        if (userRole === 'admin') {
+          showApp();
+          loadData();
+        } else {
+          checkDocsSigned();
+        }
+      });
+    }
+
+    // ==================== DOCUMENT SIGNING ====================
+    function checkDocsSigned() {
+      sb.from('signed_documents').select('*').eq('user_id', currentUser.id).then(function(r) {
+        signedDocs = r.data || [];
+        if (signedDocs.length >= 3) {
+          showApp();
+          loadData();
+        } else {
+          showDocsScreen();
+        }
+      });
+    }
+
+    function showDocsScreen() {
+      hideLoading();
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('appContainer').classList.remove('show');
+      document.getElementById('docsScreen').classList.add('show');
+      document.getElementById('signDate').textContent = new Date().toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
+      docsChecked = {1: false, 2: false, 3: false};
+      document.getElementById('doc1Check').checked = false;
+      document.getElementById('doc2Check').checked = false;
+      document.getElementById('doc3Check').checked = false;
+      updateDocsProgress();
+    }
+
+    function checkDoc(num) {
+      docsChecked[num] = document.getElementById('doc' + num + 'Check').checked;
+      document.getElementById('doc' + num + 'Status').textContent = docsChecked[num] ? 'Agreed' : 'Pending';
+      document.getElementById('doc' + num + 'Status').className = 'doc-status ' + (docsChecked[num] ? 'signed' : 'pending');
+      updateDocsProgress();
+    }
+
+    function updateDocsProgress() {
+      var count = 0;
+      if (docsChecked[1]) count++;
+      if (docsChecked[2]) count++;
+      if (docsChecked[3]) count++;
+      document.getElementById('docsProgress').textContent = count;
+      document.getElementById('progressFill').style.width = (count / 3 * 100) + '%';
+      document.getElementById('signatureCard').style.display = count === 3 ? 'block' : 'none';
+    }
+
+    function submitSignature() {
+      var sig = document.getElementById('signatureInput').value.trim();
+      if (!sig) {
+        alert('Please type your full legal name');
+        return;
+      }
+      if (sig.split(' ').length < 2) {
+        alert('Please enter first and last name');
+        return;
+      }
+      
+      var now = new Date().toISOString();
+      var docs = [
+        {user_id: currentUser.id, doc_type: 'terms_conditions', doc_title: 'Terms and Conditions', signature: sig, signed_at: now},
+        {user_id: currentUser.id, doc_type: 'shipper_auth', doc_title: 'Shipper Authorization', signature: sig, signed_at: now},
+        {user_id: currentUser.id, doc_type: 'liability_waiver', doc_title: 'Liability Waiver', signature: sig, signed_at: now}
+      ];
+      
+      sb.from('signed_documents').insert(docs).then(function(r) {
+        if (r.error) {
+          alert('Error saving documents: ' + r.error.message);
+          return;
+        }
+        signedDocs = docs;
+        document.getElementById('docsScreen').classList.remove('show');
+        document.getElementById('signatureInput').value = '';
+        showApp();
+        loadData();
+      });
+    }
+
+    // ==================== UI HELPERS ====================
+    function hideLoading() {
+      document.getElementById('loadingOverlay').classList.add('hidden');
+    }
+
+    function hideAll() {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('docsScreen').classList.remove('show');
+      document.getElementById('appContainer').classList.remove('show');
+    }
+
+    function showApp() {
+      hideLoading();
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('docsScreen').classList.remove('show');
+      document.getElementById('appContainer').classList.add('show');
+      
+      // Get user name
+      var name = 'User';
+      if (userProfile && userProfile.full_name) {
+        name = userProfile.full_name;
+      } else if (currentUser && currentUser.user_metadata && currentUser.user_metadata.full_name) {
+        name = currentUser.user_metadata.full_name;
+      }
+      
+      // Update UI
+      document.getElementById('userName').textContent = name;
+      document.getElementById('userEmail').textContent = currentUser.email || '-';
+      document.getElementById('roleBadge').textContent = userRole === 'admin' ? 'Admin' : 'Customer';
+      document.getElementById('welcomeText').textContent = 'Welcome, ' + name + '!';
+      
+      // Show/hide admin elements
+      var adminElements = document.querySelectorAll('.admin-only');
+      adminElements.forEach(function(el) {
+        el.style.display = userRole === 'admin' ? '' : 'none';
+      });
+      
+      // Update labels based on role
+      if (userRole === 'admin') {
+        document.getElementById('statCustomersLabel').textContent = 'Customers';
+        document.getElementById('inventoryTitle').textContent = 'All Inventory';
+        document.getElementById('inventorySubtitle').textContent = 'Manage all items';
+        document.getElementById('welcomeSubtext').textContent = 'Admin Dashboard';
+        document.getElementById('customerRecentItems').style.display = 'none';
+        document.getElementById('navInventoryText').textContent = 'All Inventory';
+      } else {
+        document.getElementById('statCustomersLabel').textContent = 'Items';
+        document.getElementById('inventoryTitle').textContent = 'My Items';
+        document.getElementById('inventorySubtitle').textContent = 'Track your shipments';
+        document.getElementById('welcomeSubtext').textContent = 'Track your shipments to Guinea';
+        document.getElementById('customerRecentItems').style.display = '';
+        document.getElementById('navInventoryText').textContent = 'My Items';
+      }
+    }
+
+    // ==================== AUTH ====================
+    function showLoginTab(tab) {
+      document.querySelectorAll('.login-tab').forEach(function(t) {
+        t.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      document.getElementById('signinForm').style.display = tab === 'signin' ? 'block' : 'none';
+      document.getElementById('signupForm').style.display = tab === 'signup' ? 'block' : 'none';
+      document.getElementById('errorMessage').classList.remove('show');
+      document.getElementById('successMessage').classList.remove('show');
+    }
+
+    function showError(msg) {
+      document.getElementById('errorMessage').textContent = msg;
+      document.getElementById('errorMessage').classList.add('show');
+      document.getElementById('successMessage').classList.remove('show');
+    }
+
+    function showSuccess(msg) {
+      document.getElementById('successMessage').textContent = msg;
+      document.getElementById('successMessage').classList.add('show');
+      document.getElementById('errorMessage').classList.remove('show');
+    }
+
+    function handleSignIn(e) {
+      e.preventDefault();
+      var email = document.getElementById('signinEmail').value;
+      var pw = document.getElementById('signinPassword').value;
+      var btn = document.getElementById('signinBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div>';
+      
+      sb.auth.signInWithPassword({email: email, password: pw}).then(function(r) {
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+        if (r.error) showError(r.error.message);
+      });
+    }
+
+    function handleSignUp(e) {
+      e.preventDefault();
+      var name = document.getElementById('signupName').value;
+      var phone = document.getElementById('signupPhone').value;
+      var email = document.getElementById('signupEmail').value;
+      var pw = document.getElementById('signupPassword').value;
+      var btn = document.getElementById('signupBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div>';
+      
+      sb.auth.signUp({
+        email: email,
+        password: pw,
+        options: {data: {full_name: name, phone: phone}}
+      }).then(function(r) {
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+        if (r.error) {
+          showError(r.error.message);
+        } else {
+          showSuccess('Account created! Check email to verify.');
+        }
+      });
+    }
+
+    function handleLogout() {
+      sb.auth.signOut();
+    }
+
+    // ==================== DATA LOADING ====================
+    function loadData() {
+      // Load signed documents for current user
+      sb.from('signed_documents').select('*').eq('user_id', currentUser.id).then(function(r) {
+        signedDocs = r.data || [];
+        renderDocs();
+      });
+      
+      if (userRole === 'admin') {
+        // Admin: load all profiles and all inventory
+        sb.from('profiles').select('*').order('created_at', {ascending: false}).then(function(r) {
+          customers = r.data || [];
+          loadCustomerDocs();
+        });
+        
+        sb.from('inventory').select('*').order('created_at', {ascending: false}).then(function(r) {
+          inventory = r.data || [];
+          renderAll();
+        });
+      } else {
+        // Customer: load only their inventory
+        sb.from('inventory').select('*').eq('user_id', currentUser.id).order('created_at', {ascending: false}).then(function(r) {
+          inventory = r.data || [];
+          renderAll();
+        });
+      }
+    }
+
+    function loadCustomerDocs() {
+      sb.from('signed_documents').select('user_id').then(function(r) {
+        var docCounts = {};
+        (r.data || []).forEach(function(d) {
+          docCounts[d.user_id] = (docCounts[d.user_id] || 0) + 1;
+        });
+        customers.forEach(function(c) {
+          c.docs_count = docCounts[c.id] || 0;
+        });
+        renderAll();
+      });
+    }
+
+    // ==================== INVENTORY OPERATIONS ====================
+    function saveItem() {
+      var desc = document.getElementById('itemDesc').value.trim();
+      if (!desc) {
+        alert('Please enter a description');
+        return;
+      }
+      
+      var item = {
+        item_id: 'INV-' + Date.now(),
+        description: desc,
+        category: document.getElementById('itemCategory').value,
+        quantity: parseInt(document.getElementById('itemQty').value) || 1,
+        weight: parseFloat(document.getElementById('itemWeight').value) || 0,
+        value: parseFloat(document.getElementById('itemValue').value) || 0,
+        notes: document.getElementById('itemNotes').value,
+        status: 'received',
+        user_id: currentUser.id
+      };
+      
+      // Admin can assign to different customer
+      if (userRole === 'admin') {
+        var selectedCustomer = document.getElementById('itemCustomer').value;
+        if (selectedCustomer) {
+          item.user_id = selectedCustomer;
+        }
+      }
+      
+      sb.from('inventory').insert([item]).select().then(function(r) {
+        if (r.error) {
+          alert('Error: ' + r.error.message);
+          return;
+        }
+        inventory.unshift(r.data[0]);
+        closeModal('itemModal');
+        clearItemForm();
+        renderAll();
+      });
+    }
+
+    function deleteItem(id) {
+      if (!confirm('Delete this item?')) return;
+      
+      sb.from('inventory').delete().eq('id', id).then(function(r) {
+        if (r.error) {
+          alert('Error: ' + r.error.message);
+          return;
+        }
+        inventory = inventory.filter(function(i) {
+          return i.id !== id;
+        });
+        renderAll();
+      });
+    }
+
+    function submitInventory() {
+      // Check if there are items to submit
+      var pendingItems = inventory.filter(function(i) {
+        return i.status !== 'submitted';
+      });
+      
+      if (pendingItems.length === 0) {
+        alert('No items to submit');
+        return;
+      }
+      
+      if (!confirm('Are you sure you want to submit your inventory? You will not be able to delete items after submission.')) {
+        return;
+      }
+      
+      // Get IDs of items to update
+      var itemIds = pendingItems.map(function(i) { return i.id; });
+      
+      // Update all items to 'submitted' status
+      sb.from('inventory').update({status: 'submitted'}).in('id', itemIds).then(function(r) {
+        if (r.error) {
+          alert('Error submitting inventory: ' + r.error.message);
+          return;
+        }
+        
+        // Update local state
+        inventory.forEach(function(item) {
+          if (itemIds.indexOf(item.id) !== -1) {
+            item.status = 'submitted';
+          }
+        });
+        
+        alert('Inventory submitted successfully!');
+        renderAll();
+      });
+    }
+
+    function clearItemForm() {
+      document.getElementById('itemDesc').value = '';
+      document.getElementById('itemQty').value = '1';
+      document.getElementById('itemWeight').value = '0';
+      document.getElementById('itemValue').value = '0';
+      document.getElementById('itemNotes').value = '';
+    }
+
+    // ==================== RENDERING ====================
+    function getCustomerStats() {
+      var stats = {};
+      inventory.forEach(function(item) {
+        var cid = item.user_id;
+        if (!stats[cid]) stats[cid] = {items: 0, weight: 0, value: 0};
+        stats[cid].items++;
+        stats[cid].weight += item.weight || 0;
+        stats[cid].value += item.value || 0;
+      });
+      return stats;
+    }
+
+    function renderAll() {
+      var stats = getCustomerStats();
+      var totalWeight = 0;
+      var totalValue = 0;
+      
+      inventory.forEach(function(item) {
+        totalWeight += item.weight || 0;
+        totalValue += item.value || 0;
+      });
+      
+      document.getElementById('statWeight').textContent = totalWeight.toFixed(1) + ' lbs';
+      document.getElementById('statValue').textContent = '$' + totalValue.toLocaleString();
+      document.getElementById('statItems').textContent = inventory.length;
+      document.getElementById('inventoryCount').textContent = inventory.length;
+      
+      if (userRole === 'admin') {
+        document.getElementById('statCustomers').textContent = customers.length;
+        document.getElementById('customerCount').textContent = customers.length;
+        renderAdminDashboard(stats);
+        renderCustomersTable(stats);
+        document.getElementById('submitInventoryBtn').style.display = 'none';
+      } else {
+        document.getElementById('statCustomers').textContent = inventory.length;
+        renderCustomerDashboard();
+        
+        // Show submit button only if there are pending items
+        var pendingItems = inventory.filter(function(i) { return i.status !== 'submitted'; });
+        document.getElementById('submitInventoryBtn').style.display = pendingItems.length > 0 ? '' : 'none';
+      }
+      
+      populateDropdowns();
+      renderInventory();
+    }
+
+    function renderAdminDashboard(stats) {
+      var html = '';
+      customers.slice(0, 10).forEach(function(c) {
+        var s = stats[c.id] || {items: 0, weight: 0, value: 0};
+        var initials = ((c.full_name || 'U')[0]).toUpperCase();
+        var docsBadge = c.docs_count >= 3 
+          ? '<span class="status-badge received">Signed</span>'
+          : '<span class="status-badge" style="background:var(--danger-light);color:var(--danger)">Pending</span>';
+        
+        html += '<tr>';
+        html += '<td><div class="customer-cell"><div class="customer-avatar">' + initials + '</div>';
+        html += '<div class="customer-info"><div class="name">' + (c.full_name || 'Unknown') + '</div>';
+        html += '<div class="id">' + (c.role || 'customer') + '</div></div></div></td>';
+        html += '<td>' + s.items + '</td>';
+        html += '<td class="weight-cell">' + s.weight.toFixed(1) + ' lbs</td>';
+        html += '<td class="value-cell">$' + s.value.toLocaleString() + '</td>';
+        html += '<td>' + docsBadge + '</td>';
+        html += '</tr>';
+      });
+      
+      document.getElementById('dashboardTable').innerHTML = html || '<tr><td colspan="5" style="text-align:center;padding:40px">No customers</td></tr>';
+    }
+
+    function renderCustomerDashboard() {
+      var html = '';
+      inventory.slice(0, 5).forEach(function(item) {
+        html += '<tr>';
+        html += '<td style="font-family:Space Mono,monospace;font-size:12px">' + item.item_id + '</td>';
+        html += '<td>' + item.description + '</td>';
+        html += '<td style="text-transform:capitalize">' + item.category + '</td>';
+        html += '<td class="weight-cell">' + (item.weight || 0) + ' lbs</td>';
+        html += '<td class="value-cell">$' + (item.value || 0).toLocaleString() + '</td>';
+        html += '<td><span class="status-badge received">' + (item.status || 'received') + '</span></td>';
+        html += '</tr>';
+      });
+      
+      document.getElementById('myItemsTable').innerHTML = html || '<tr><td colspan="6" style="text-align:center;padding:40px">No items yet</td></tr>';
+    }
+
+    function renderCustomersTable(stats) {
+      var html = '';
+      customers.forEach(function(c) {
+        var s = stats[c.id] || {items: 0, weight: 0, value: 0};
+        var initials = ((c.full_name || 'U')[0]).toUpperCase();
+        var docsBadge = c.docs_count >= 3
+          ? '<span class="status-badge received">' + c.docs_count + '/3</span>'
+          : '<span class="status-badge" style="background:var(--danger-light);color:var(--danger)">' + (c.docs_count || 0) + '/3</span>';
+        
+        html += '<tr>';
+        html += '<td><div class="customer-cell"><div class="customer-avatar">' + initials + '</div>';
+        html += '<div class="customer-info"><div class="name">' + (c.full_name || 'Unknown') + '</div>';
+        html += '<div class="id">' + c.id.substring(0, 8) + '</div></div></div></td>';
+        html += '<td>' + (c.phone || '-') + '</td>';
+        html += '<td>' + s.items + '</td>';
+        html += '<td class="weight-cell">' + s.weight.toFixed(1) + ' lbs</td>';
+        html += '<td class="value-cell">$' + s.value.toLocaleString() + '</td>';
+        html += '<td>' + docsBadge + '</td>';
+        html += '</tr>';
+      });
+      
+      document.getElementById('customersTable').innerHTML = html || '<tr><td colspan="6" style="text-align:center;padding:40px">No customers</td></tr>';
+    }
+
+    function renderInventory() {
+      var filterCustomer = document.getElementById('filterCustomer').value;
+      var filterCategory = document.getElementById('filterCategory').value;
+      
+      var filtered = inventory.filter(function(item) {
+        if (filterCustomer && item.user_id !== filterCustomer) return false;
+        if (filterCategory && item.category !== filterCategory) return false;
+        return true;
+      });
+      
+      var html = '';
+      var totalWeight = 0;
+      var totalValue = 0;
+      
+      filtered.forEach(function(item) {
+        var customerCol = '';
+        if (userRole === 'admin') {
+          var customer = customers.find(function(c) { return c.id === item.user_id; });
+          customerCol = '<td>' + (customer ? customer.full_name : 'Unknown') + '</td>';
+        }
+        
+        // Only show delete button if status is not 'submitted'
+        var actionBtn = '';
+        if (item.status !== 'submitted') {
+          actionBtn = '<button class="action-btn danger" onclick="deleteItem(' + item.id + ')">Delete</button>';
+        } else {
+          actionBtn = '<span style="color:var(--text-muted);font-size:12px">Submitted</span>';
+        }
+        
+        html += '<tr>';
+        html += '<td style="font-family:Space Mono,monospace;font-size:12px">' + item.item_id + '</td>';
+        html += customerCol;
+        html += '<td>' + item.description + '</td>';
+        html += '<td style="text-transform:capitalize">' + item.category + '</td>';
+        html += '<td class="weight-cell">' + (item.weight || 0) + ' lbs</td>';
+        html += '<td class="value-cell">$' + (item.value || 0).toLocaleString() + '</td>';
+        html += '<td>' + actionBtn + '</td>';
+        html += '</tr>';
+        
+        totalWeight += item.weight || 0;
+        totalValue += item.value || 0;
+      });
+      
+      var emptyColspan = userRole === 'admin' ? '7' : '6';
+      document.getElementById('inventoryTable').innerHTML = html || '<tr><td colspan="' + emptyColspan + '" style="text-align:center;padding:40px">No items</td></tr>';
+      document.getElementById('totalItems').textContent = filtered.length;
+      document.getElementById('totalWeight').textContent = totalWeight.toFixed(1) + ' lbs';
+      document.getElementById('totalValue').textContent = '$' + totalValue.toLocaleString();
+    }
+
+    function renderDocs() {
+      var html = '';
+      signedDocs.forEach(function(doc) {
+        var date = new Date(doc.signed_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'});
+        html += '<tr>';
+        html += '<td>' + doc.doc_title + '</td>';
+        html += '<td>' + date + '</td>';
+        html += '<td style="font-family:Space Mono,monospace;font-style:italic">' + doc.signature + '</td>';
+        html += '<td><button class="action-btn" onclick="downloadDoc(\'' + doc.doc_type + '\',\'' + doc.doc_title + '\',\'' + doc.signature + '\',\'' + doc.signed_at + '\')">Download</button></td>';
+        html += '</tr>';
+      });
+      
+      document.getElementById('docsTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text-muted)">No documents</td></tr>';
+    }
+
+    function downloadDoc(type, title, sig, date) {
+      var content = 'GUINEA CARGO SERVICES\n';
+      content += '========================\n\n';
+      content += 'Document: ' + title + '\n';
+      content += 'Signed By: ' + sig + '\n';
+      content += 'Date: ' + new Date(date).toLocaleDateString() + '\n';
+      content += 'User: ' + currentUser.email + '\n\n';
+      content += 'This document was electronically signed.\n';
+      
+      var blob = new Blob([content], {type: 'text/plain'});
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = type + '_signed.txt';
+      a.click();
+    }
+
+    // ==================== DROPDOWNS ====================
+    function populateDropdowns() {
+      if (userRole === 'admin') {
+        var opts = '<option value="">Select...</option>';
+        customers.forEach(function(c) {
+          opts += '<option value="' + c.id + '">' + (c.full_name || 'Unknown') + '</option>';
+        });
+        document.getElementById('itemCustomer').innerHTML = opts;
+        document.getElementById('filterCustomer').innerHTML = '<option value="">All</option>' + opts;
+      }
+    }
+
+    // ==================== MODALS ====================
+    function openModal(id) {
+      document.getElementById(id).classList.add('active');
+      populateDropdowns();
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    // ==================== NAVIGATION ====================
+    document.querySelectorAll('.nav-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        var page = this.getAttribute('data-page');
+        if (!page) return;
+        
+        document.querySelectorAll('.nav-item').forEach(function(n) {
+          n.classList.remove('active');
+        });
+        this.classList.add('active');
+        
+        document.querySelectorAll('.page').forEach(function(p) {
+          p.classList.remove('active');
+        });
+        document.getElementById(page).classList.add('active');
+      });
+    });
+
+    // Close modal on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(function(m) {
+      m.addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('active');
+      });
+    });
+
+    // ==================== EXPORT ====================
+    function exportCSV() {
+      var csv = 'ID,Description,Category,Qty,Weight,Value,Status\n';
+      inventory.forEach(function(item) {
+        csv += item.item_id + ',"' + item.description + '",' + item.category + ',' + (item.quantity || 1) + ',' + item.weight + ',' + item.value + ',' + item.status + '\n';
+      });
+      
+      var blob = new Blob([csv], {type: 'text/csv'});
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'items.csv';
+      a.click();
+    }
+
+    // ==================== START ====================
+    document.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
