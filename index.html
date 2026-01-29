@@ -221,6 +221,7 @@
         <a class="nav-item active" data-page="adminDashboard"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Overview</a>
         <a class="nav-item" data-page="adminCustomers"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Customers<span class="nav-badge" id="adminCustomerCount">0</span></a>
         <a class="nav-item" data-page="adminInventory"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>All Inventory<span class="nav-badge" id="adminInventoryCount">0</span></a>
+        <a class="nav-item" data-page="adminShipments"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>Shipments<span class="nav-badge" id="adminShipmentCount">0</span></a>
         <a class="nav-item" data-page="adminReports"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Reports</a>
       </nav>
       
@@ -314,7 +315,7 @@
             <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;background:var(--primary);color:#fff;margin:-1px;padding:20px 24px">
               <div>
                 <h3 id="adminDetailName" style="margin-bottom:4px">Customer Name</h3>
-                <span id="adminDetailEmail" style="opacity:0.8;font-size:13px">email@example.com</span>
+                <span id="adminDetailEmail" style="opacity:0.8;font-size:13px"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2b4e464a42476b4e534a465b474e05484446">[email&#160;protected]</a></span>
               </div>
               <div>
                 <button class="btn" onclick="addItemForSelectedCustomer()" style="background:var(--accent);color:#000;margin-right:8px">Add Item</button>
@@ -403,7 +404,64 @@
         </div>
       </div>
 
-      <!-- ============================================== -->
+      <!-- ADMIN SHIPMENTS PAGE -->
+      <div class="page" id="adminShipments">
+        <header class="header">
+          <div><h2>Shipments</h2><p>Manage container shipments</p></div>
+          <div class="header-actions">
+            <button class="btn btn-primary" onclick="openModal('shipmentModal')">+ New Shipment</button>
+          </div>
+        </header>
+        <div class="content">
+          <!-- Shipments List -->
+          <div class="card">
+            <div class="card-header"><h3>All Shipments</h3></div>
+            <table>
+              <thead><tr><th>Shipment ID</th><th>Name</th><th>Date</th><th>Items</th><th>Weight</th><th>Value</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="shipmentsTable"></tbody>
+            </table>
+          </div>
+          
+          <!-- Shipment Detail Panel -->
+          <div class="card" id="shipmentDetailPanel" style="display:none">
+            <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;background:var(--primary);color:#fff;margin:-1px;padding:20px 24px">
+              <div>
+                <h3 id="shipmentDetailName" style="margin-bottom:4px">Shipment Name</h3>
+                <span id="shipmentDetailId" style="opacity:0.8;font-size:13px">SHP-000</span>
+              </div>
+              <div>
+                <button class="btn" onclick="addItemsToShipment()" style="background:var(--accent);color:#000;margin-right:8px">+ Add Items</button>
+                <button class="btn" onclick="exportShipment()" style="background:rgba(255,255,255,0.2);color:#fff;margin-right:8px">Export</button>
+                <button class="btn" onclick="closeShipmentDetail()" style="background:rgba(255,255,255,0.2);color:#fff">Close</button>
+              </div>
+            </div>
+            <div style="padding:20px;background:var(--bg-main);display:grid;grid-template-columns:repeat(5,1fr);gap:16px;font-size:13px">
+              <div><strong>Created:</strong><br><span id="shipmentDetailDate">-</span></div>
+              <div><strong>Status:</strong><br><span id="shipmentDetailStatus">-</span></div>
+              <div><strong>Items:</strong><br><span id="shipmentDetailItems">0</span></div>
+              <div><strong>Total Weight:</strong><br><span id="shipmentDetailWeight">0 lbs</span></div>
+              <div><strong>Total Value:</strong><br><span id="shipmentDetailValue">$0</span></div>
+            </div>
+            <div style="padding:16px;background:var(--bg-main);border-bottom:1px solid var(--border)">
+              <strong>Notes:</strong> <span id="shipmentDetailNotes" style="color:var(--text-secondary)">-</span>
+            </div>
+            <table>
+              <thead><tr><th><input type="checkbox" id="selectAllShipmentItems" onchange="toggleAllShipmentItems()"></th><th>Item ID</th><th>Customer</th><th>Description</th><th>Weight</th><th>Value</th><th>Actions</th></tr></thead>
+              <tbody id="shipmentItemsTable"></tbody>
+            </table>
+            <div class="totals-row">
+              <button class="btn" style="background:var(--danger);color:#fff" onclick="removeSelectedFromShipment()">Remove Selected</button>
+              <div style="display:flex;gap:32px">
+                <div class="total-item"><label>Items</label><div class="value" id="shipmentTotalItems">0</div></div>
+                <div class="total-item"><label>Weight</label><div class="value" id="shipmentTotalWeight">0 lbs</div></div>
+                <div class="total-item"><label>Value</label><div class="value primary" id="shipmentTotalValue">$0</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================== --> -->
       <!-- CUSTOMER PAGES -->
       <!-- ============================================== -->
       
@@ -518,6 +576,53 @@
     </div>
   </div>
 
+  <!-- NEW SHIPMENT MODAL -->
+  <div class="modal-overlay" id="shipmentModal">
+    <div class="modal">
+      <div class="modal-header"><h3 id="shipmentModalTitle">New Shipment</h3><button class="modal-close" onclick="closeModal('shipmentModal')">×</button></div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group full-width"><label class="form-label">Shipment Name *</label><input type="text" class="form-input" id="shipmentName" placeholder="e.g. January 2025 Container"></div>
+          <div class="form-group"><label class="form-label">Target Date</label><input type="date" class="form-input" id="shipmentDate"></div>
+          <div class="form-group"><label class="form-label">Status</label><select class="form-input" id="shipmentStatus"><option value="planning">Planning</option><option value="loading">Loading</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option></select></div>
+          <div class="form-group full-width"><label class="form-label">Notes</label><textarea class="form-input" id="shipmentNotes" placeholder="Optional notes about this shipment"></textarea></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('shipmentModal')">Cancel</button><button class="btn btn-primary" onclick="saveShipment()">Create Shipment</button></div>
+    </div>
+  </div>
+
+  <!-- ADD ITEMS TO SHIPMENT MODAL -->
+  <div class="modal-overlay" id="addToShipmentModal">
+    <div class="modal" style="max-width:900px">
+      <div class="modal-header"><h3>Add Items to Shipment</h3><button class="modal-close" onclick="closeModal('addToShipmentModal')">×</button></div>
+      <div class="modal-body" style="max-height:60vh">
+        <div class="filters" style="margin-bottom:16px;flex-wrap:wrap;gap:12px">
+          <select class="filter-select" id="addShipmentCustomerFilter" onchange="renderAvailableItems()">
+            <option value="">All Customers</option>
+          </select>
+          <select class="filter-select" id="addShipmentStatusFilter" onchange="renderAvailableItems()">
+            <option value="">All Status</option>
+            <option value="submitted">Submitted Only</option>
+            <option value="received">Pending Only</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px">
+            <input type="checkbox" id="hideAssignedItems" onchange="renderAvailableItems()" checked> Hide already assigned
+          </label>
+        </div>
+        <table>
+          <thead><tr><th><input type="checkbox" id="selectAllAvailable" onchange="toggleAllAvailable()"></th><th>Item ID</th><th>Customer</th><th>Description</th><th>Weight</th><th>Value</th><th>Status</th></tr></thead>
+          <tbody id="availableItemsTable"></tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <div style="flex:1;text-align:left;font-size:13px;color:var(--text-secondary)"><span id="selectedItemCount">0</span> items selected</div>
+        <button class="btn btn-secondary" onclick="closeModal('addToShipmentModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmAddToShipment()">Add Selected</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ==================== CONFIGURATION ====================
     var SUPABASE_URL = 'https://usxkawrvasiidlsludjc.supabase.co';
@@ -531,6 +636,8 @@
     var customers = [];
     var inventory = [];
     var signedDocs = [];
+    var shipments = [];
+    var currentShipmentId = null;
     var docsChecked = {1: false, 2: false, 3: false};
     var editingItemId = null;
     var selectedPhotoFile = null;
@@ -871,6 +978,9 @@
           renderAll();
           updateMobileMenuVisibility();
         });
+        
+        // Load shipments
+        loadShipments();
       } else {
         // Customer: load only their inventory
         sb.from('inventory').select('*').eq('user_id', currentUser.id).order('created_at', {ascending: false}).then(function(r) {
@@ -879,6 +989,13 @@
           updateMobileMenuVisibility();
         });
       }
+    }
+
+    function loadShipments() {
+      sb.from('shipments').select('*').order('created_at', {ascending: false}).then(function(r) {
+        shipments = r.data || [];
+        renderShipments();
+      });
     }
 
     function loadCustomerDocs() {
@@ -1738,6 +1855,330 @@
       openModal('itemModal');
     }
 
+    // ==================== SHIPMENTS ====================
+    function renderShipments() {
+      var html = '';
+      
+      shipments.forEach(function(shipment) {
+        var shipmentItems = inventory.filter(function(i) { return i.shipment_id === shipment.id; });
+        var totalWeight = 0, totalValue = 0;
+        shipmentItems.forEach(function(i) { totalWeight += i.weight || 0; totalValue += i.value || 0; });
+        
+        var statusColors = {
+          planning: 'background:var(--accent);color:#000',
+          loading: 'background:#3b82f6;color:#fff',
+          shipped: 'background:#8b5cf6;color:#fff',
+          delivered: 'background:var(--success);color:#fff'
+        };
+        var statusStyle = statusColors[shipment.status] || statusColors.planning;
+        
+        var date = shipment.target_date ? new Date(shipment.target_date).toLocaleDateString() : '-';
+        
+        html += '<tr style="cursor:pointer" onclick="viewShipment(' + shipment.id + ')">';
+        html += '<td style="font-family:monospace;font-size:12px">SHP-' + String(shipment.id).padStart(3, '0') + '</td>';
+        html += '<td><strong>' + (shipment.name || 'Unnamed') + '</strong></td>';
+        html += '<td>' + date + '</td>';
+        html += '<td>' + shipmentItems.length + '</td>';
+        html += '<td class="weight-cell">' + totalWeight.toFixed(1) + ' lbs</td>';
+        html += '<td class="value-cell">$' + totalValue.toLocaleString() + '</td>';
+        html += '<td><span class="status-badge" style="' + statusStyle + ';text-transform:capitalize">' + shipment.status + '</span></td>';
+        html += '<td><button class="action-btn" onclick="event.stopPropagation();viewShipment(' + shipment.id + ')">View</button> <button class="action-btn danger" onclick="event.stopPropagation();deleteShipment(' + shipment.id + ')">Del</button></td>';
+        html += '</tr>';
+      });
+      
+      document.getElementById('shipmentsTable').innerHTML = html || '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted)">No shipments yet. Click "New Shipment" to create one.</td></tr>';
+      document.getElementById('adminShipmentCount').textContent = shipments.length;
+    }
+
+    function saveShipment() {
+      var name = document.getElementById('shipmentName').value.trim();
+      if (!name) {
+        alert('Please enter a shipment name');
+        return;
+      }
+      
+      var shipmentData = {
+        name: name,
+        target_date: document.getElementById('shipmentDate').value || null,
+        status: document.getElementById('shipmentStatus').value,
+        notes: document.getElementById('shipmentNotes').value.trim()
+      };
+      
+      sb.from('shipments').insert([shipmentData]).select().then(function(r) {
+        if (r.error) {
+          alert('Error creating shipment: ' + r.error.message);
+          return;
+        }
+        
+        shipments.unshift(r.data[0]);
+        renderShipments();
+        closeModal('shipmentModal');
+        
+        // Clear form
+        document.getElementById('shipmentName').value = '';
+        document.getElementById('shipmentDate').value = '';
+        document.getElementById('shipmentStatus').value = 'planning';
+        document.getElementById('shipmentNotes').value = '';
+        
+        // View the new shipment
+        viewShipment(r.data[0].id);
+      });
+    }
+
+    function viewShipment(shipmentId) {
+      currentShipmentId = shipmentId;
+      var shipment = shipments.find(function(s) { return s.id === shipmentId; });
+      if (!shipment) return;
+      
+      // Navigate to shipments page
+      navigateTo('adminShipments');
+      
+      var shipmentItems = inventory.filter(function(i) { return i.shipment_id === shipmentId; });
+      var totalWeight = 0, totalValue = 0;
+      shipmentItems.forEach(function(i) { totalWeight += i.weight || 0; totalValue += i.value || 0; });
+      
+      // Update header
+      document.getElementById('shipmentDetailName').textContent = shipment.name || 'Unnamed Shipment';
+      document.getElementById('shipmentDetailId').textContent = 'SHP-' + String(shipment.id).padStart(3, '0');
+      document.getElementById('shipmentDetailDate').textContent = shipment.target_date ? new Date(shipment.target_date).toLocaleDateString() : '-';
+      document.getElementById('shipmentDetailStatus').textContent = (shipment.status || 'planning').charAt(0).toUpperCase() + (shipment.status || 'planning').slice(1);
+      document.getElementById('shipmentDetailItems').textContent = shipmentItems.length;
+      document.getElementById('shipmentDetailWeight').textContent = totalWeight.toFixed(1) + ' lbs';
+      document.getElementById('shipmentDetailValue').textContent = '$' + totalValue.toLocaleString();
+      document.getElementById('shipmentDetailNotes').textContent = shipment.notes || 'No notes';
+      
+      // Render items table
+      var html = '';
+      shipmentItems.forEach(function(item) {
+        var customer = customers.find(function(c) { return c.id === item.user_id; });
+        html += '<tr>';
+        html += '<td><input type="checkbox" class="shipment-item-checkbox" value="' + item.id + '"></td>';
+        html += '<td style="font-family:monospace;font-size:11px">' + item.item_id + '</td>';
+        html += '<td>' + (customer ? customer.full_name : 'Unknown') + '</td>';
+        html += '<td>' + item.description + '</td>';
+        html += '<td class="weight-cell">' + (item.weight || 0) + ' lbs</td>';
+        html += '<td class="value-cell">$' + (item.value || 0).toLocaleString() + '</td>';
+        html += '<td><button class="action-btn danger" onclick="removeFromShipment(' + item.id + ')">Remove</button></td>';
+        html += '</tr>';
+      });
+      
+      document.getElementById('shipmentItemsTable').innerHTML = html || '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted)">No items in this shipment. Click "Add Items" to add inventory.</td></tr>';
+      document.getElementById('shipmentTotalItems').textContent = shipmentItems.length;
+      document.getElementById('shipmentTotalWeight').textContent = totalWeight.toFixed(1) + ' lbs';
+      document.getElementById('shipmentTotalValue').textContent = '$' + totalValue.toLocaleString();
+      
+      // Show panel
+      document.getElementById('shipmentDetailPanel').style.display = 'block';
+      document.getElementById('shipmentDetailPanel').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function closeShipmentDetail() {
+      document.getElementById('shipmentDetailPanel').style.display = 'none';
+      currentShipmentId = null;
+    }
+
+    function deleteShipment(shipmentId) {
+      if (!confirm('Delete this shipment? Items will be unassigned but not deleted.')) return;
+      
+      // First unassign all items
+      sb.from('inventory').update({ shipment_id: null }).eq('shipment_id', shipmentId).then(function() {
+        // Then delete shipment
+        sb.from('shipments').delete().eq('id', shipmentId).then(function(r) {
+          if (r.error) {
+            alert('Error: ' + r.error.message);
+            return;
+          }
+          
+          // Update local inventory
+          inventory.forEach(function(i) {
+            if (i.shipment_id === shipmentId) i.shipment_id = null;
+          });
+          
+          // Remove from shipments array
+          shipments = shipments.filter(function(s) { return s.id !== shipmentId; });
+          renderShipments();
+          closeShipmentDetail();
+        });
+      });
+    }
+
+    function addItemsToShipment() {
+      if (!currentShipmentId) return;
+      
+      // Populate customer filter
+      var customerList = customers.filter(function(c) { return c.role !== 'admin'; });
+      var opts = '<option value="">All Customers</option>';
+      customerList.forEach(function(c) {
+        opts += '<option value="' + c.id + '">' + (c.full_name || 'Unknown') + '</option>';
+      });
+      document.getElementById('addShipmentCustomerFilter').innerHTML = opts;
+      
+      renderAvailableItems();
+      openModal('addToShipmentModal');
+    }
+
+    function renderAvailableItems() {
+      var customerFilter = document.getElementById('addShipmentCustomerFilter').value;
+      var statusFilter = document.getElementById('addShipmentStatusFilter').value;
+      var hideAssigned = document.getElementById('hideAssignedItems').checked;
+      
+      var available = inventory.filter(function(item) {
+        if (customerFilter && item.user_id !== customerFilter) return false;
+        if (statusFilter && item.status !== statusFilter) return false;
+        if (hideAssigned && item.shipment_id) return false;
+        if (item.shipment_id === currentShipmentId) return false; // Already in this shipment
+        return true;
+      });
+      
+      var html = '';
+      available.forEach(function(item) {
+        var customer = customers.find(function(c) { return c.id === item.user_id; });
+        var statusBadge = item.status === 'submitted'
+          ? '<span class="status-badge received">Submitted</span>'
+          : '<span class="status-badge" style="background:var(--accent);color:#fff">Pending</span>';
+        var assignedBadge = item.shipment_id ? '<span style="color:var(--text-muted);font-size:10px;margin-left:4px">(assigned)</span>' : '';
+        
+        html += '<tr>';
+        html += '<td><input type="checkbox" class="available-item-checkbox" value="' + item.id + '" onchange="updateSelectedCount()"></td>';
+        html += '<td style="font-family:monospace;font-size:11px">' + item.item_id + '</td>';
+        html += '<td>' + (customer ? customer.full_name : 'Unknown') + assignedBadge + '</td>';
+        html += '<td>' + item.description + '</td>';
+        html += '<td class="weight-cell">' + (item.weight || 0) + ' lbs</td>';
+        html += '<td class="value-cell">$' + (item.value || 0).toLocaleString() + '</td>';
+        html += '<td>' + statusBadge + '</td>';
+        html += '</tr>';
+      });
+      
+      document.getElementById('availableItemsTable').innerHTML = html || '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted)">No available items match filter</td></tr>';
+      document.getElementById('selectAllAvailable').checked = false;
+      updateSelectedCount();
+    }
+
+    function toggleAllAvailable() {
+      var checked = document.getElementById('selectAllAvailable').checked;
+      document.querySelectorAll('.available-item-checkbox').forEach(function(cb) {
+        cb.checked = checked;
+      });
+      updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+      var count = document.querySelectorAll('.available-item-checkbox:checked').length;
+      document.getElementById('selectedItemCount').textContent = count;
+    }
+
+    function confirmAddToShipment() {
+      var itemIds = [];
+      document.querySelectorAll('.available-item-checkbox:checked').forEach(function(cb) {
+        itemIds.push(parseInt(cb.value));
+      });
+      
+      if (itemIds.length === 0) {
+        alert('Please select at least one item');
+        return;
+      }
+      
+      sb.from('inventory').update({ shipment_id: currentShipmentId }).in('id', itemIds).then(function(r) {
+        if (r.error) {
+          alert('Error: ' + r.error.message);
+          return;
+        }
+        
+        // Update local inventory
+        inventory.forEach(function(item) {
+          if (itemIds.indexOf(item.id) !== -1) {
+            item.shipment_id = currentShipmentId;
+          }
+        });
+        
+        closeModal('addToShipmentModal');
+        viewShipment(currentShipmentId);
+        renderAdminInterface();
+      });
+    }
+
+    function removeFromShipment(itemId) {
+      sb.from('inventory').update({ shipment_id: null }).eq('id', itemId).then(function(r) {
+        if (r.error) {
+          alert('Error: ' + r.error.message);
+          return;
+        }
+        
+        // Update local inventory
+        var item = inventory.find(function(i) { return i.id === itemId; });
+        if (item) item.shipment_id = null;
+        
+        viewShipment(currentShipmentId);
+      });
+    }
+
+    function toggleAllShipmentItems() {
+      var checked = document.getElementById('selectAllShipmentItems').checked;
+      document.querySelectorAll('.shipment-item-checkbox').forEach(function(cb) {
+        cb.checked = checked;
+      });
+    }
+
+    function removeSelectedFromShipment() {
+      var itemIds = [];
+      document.querySelectorAll('.shipment-item-checkbox:checked').forEach(function(cb) {
+        itemIds.push(parseInt(cb.value));
+      });
+      
+      if (itemIds.length === 0) {
+        alert('Please select items to remove');
+        return;
+      }
+      
+      if (!confirm('Remove ' + itemIds.length + ' items from this shipment?')) return;
+      
+      sb.from('inventory').update({ shipment_id: null }).in('id', itemIds).then(function(r) {
+        if (r.error) {
+          alert('Error: ' + r.error.message);
+          return;
+        }
+        
+        // Update local inventory
+        inventory.forEach(function(item) {
+          if (itemIds.indexOf(item.id) !== -1) {
+            item.shipment_id = null;
+          }
+        });
+        
+        viewShipment(currentShipmentId);
+      });
+    }
+
+    function exportShipment() {
+      if (!currentShipmentId) return;
+      
+      var shipment = shipments.find(function(s) { return s.id === currentShipmentId; });
+      var shipmentItems = inventory.filter(function(i) { return i.shipment_id === currentShipmentId; });
+      
+      var csv = 'SHIPMENT: ' + (shipment.name || 'Unnamed') + '\n';
+      csv += 'ID: SHP-' + String(shipment.id).padStart(3, '0') + '\n';
+      csv += 'Date: ' + (shipment.target_date || '-') + '\n';
+      csv += 'Status: ' + (shipment.status || 'planning') + '\n\n';
+      csv += 'ITEMS\n';
+      csv += 'Item ID,Customer,Description,Category,Weight,Value\n';
+      
+      var totalWeight = 0, totalValue = 0;
+      shipmentItems.forEach(function(item) {
+        var customer = customers.find(function(c) { return c.id === item.user_id; });
+        csv += item.item_id + ',"' + (customer ? customer.full_name : '') + '","' + item.description + '",' + item.category + ',' + item.weight + ',' + item.value + '\n';
+        totalWeight += item.weight || 0;
+        totalValue += item.value || 0;
+      });
+      
+      csv += '\nTOTAL,,' + shipmentItems.length + ' items,,' + totalWeight.toFixed(1) + ' lbs,$' + totalValue.toFixed(2) + '\n';
+      
+      var blob = new Blob([csv], {type: 'text/csv'});
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'shipment_' + (shipment.name || 'export').replace(/\s+/g, '_') + '_' + new Date().toISOString().split('T')[0] + '.csv';
+      a.click();
+    }
+
     // ==================== MOBILE MENU ====================
     function toggleMobileMenu() {
       var sidebar = document.querySelector('.sidebar');
@@ -1789,15 +2230,4 @@
       // Close sidebar on resize to desktop
       if (window.innerWidth > 768) {
         document.querySelector('.sidebar').classList.remove('open');
-        document.getElementById('sidebarOverlay').classList.remove('active');
-      }
-    });
-
-    // ==================== START ====================
-    document.addEventListener('DOMContentLoaded', function() {
-      initApp();
-      updateMobileMenuVisibility();
-    });
-  </script>
-</body>
-</html>
+        document.getElementById('sidebarOverlay').classList.remove('active
