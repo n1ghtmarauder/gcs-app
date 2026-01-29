@@ -98,41 +98,95 @@
     <main class="main">
       <!-- DASHBOARD PAGE -->
       <div class="page active" id="dashboard">
-        <header class="header"><div><h2>Dashboard</h2><p>Welcome to Guinea Cargo Services</p></div><div class="header-actions"><button class="btn btn-primary" onclick="openModal('itemModal')">Add Item</button></div></header>
+        <header class="header"><div><h2>Dashboard</h2><p>Welcome to Guinea Cargo Services</p></div><div class="header-actions admin-only"><button class="btn btn-secondary" onclick="exportAllData()">Export All</button><button class="btn btn-primary" onclick="openModal('itemModal')">Add Item</button></div><div class="header-actions" id="customerHeaderActions" style="display:none"><button class="btn btn-primary" onclick="openModal('itemModal')">Add Item</button></div></header>
         <div class="content">
           <div class="welcome-card"><h2 id="welcomeText">Welcome!</h2><p id="welcomeSubtext">Manage your shipments</p></div>
-          <div class="stats-grid">
+          
+          <!-- Admin Stats Grid -->
+          <div class="stats-grid admin-only">
             <div class="stat-card highlight"><div class="stat-label">Total Weight</div><div class="stat-value" id="statWeight">0 lbs</div></div>
-            <div class="stat-card"><div class="stat-label" id="statCustomersLabel">Items</div><div class="stat-value" id="statCustomers">0</div></div>
+            <div class="stat-card"><div class="stat-label">Customers</div><div class="stat-value" id="statCustomers">0</div></div>
             <div class="stat-card"><div class="stat-label">Total Value</div><div class="stat-value" id="statValue">$0</div></div>
-            <div class="stat-card"><div class="stat-label">Items</div><div class="stat-value" id="statItems">0</div></div>
+            <div class="stat-card"><div class="stat-label">Total Items</div><div class="stat-value" id="statItems">0</div></div>
           </div>
-          <div class="card admin-only" id="adminRecentCustomers"><div class="card-header"><h3>Recent Customers</h3></div><table><thead><tr><th>Customer</th><th>Items</th><th>Weight</th><th>Value</th><th>Docs</th></tr></thead><tbody id="dashboardTable"></tbody></table></div>
-          <div class="card" id="customerRecentItems"><div class="card-header"><h3>My Recent Items</h3></div><table><thead><tr><th>ID</th><th>Description</th><th>Category</th><th>Weight</th><th>Value</th><th>Status</th></tr></thead><tbody id="myItemsTable"></tbody></table></div>
+          
+          <!-- Admin Secondary Stats -->
+          <div class="stats-grid admin-only" style="grid-template-columns:repeat(3,1fr)">
+            <div class="stat-card"><div class="stat-label">Pending Submissions</div><div class="stat-value" id="statPending" style="color:var(--accent)">0</div></div>
+            <div class="stat-card"><div class="stat-label">Submitted Items</div><div class="stat-value" id="statSubmitted" style="color:var(--success)">0</div></div>
+            <div class="stat-card"><div class="stat-label">Unsigned Customers</div><div class="stat-value" id="statUnsigned" style="color:var(--danger)">0</div></div>
+          </div>
+          
+          <!-- Customer Stats Grid -->
+          <div class="stats-grid" id="customerStatsGrid" style="display:none">
+            <div class="stat-card highlight"><div class="stat-label">My Weight</div><div class="stat-value" id="myStatWeight">0 lbs</div></div>
+            <div class="stat-card"><div class="stat-label">My Items</div><div class="stat-value" id="myStatItems">0</div></div>
+            <div class="stat-card"><div class="stat-label">My Value</div><div class="stat-value" id="myStatValue">$0</div></div>
+            <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value" id="myStatStatus" style="font-size:16px">-</div></div>
+          </div>
+          
+          <!-- Admin: Recent Activity -->
+          <div class="card admin-only" id="adminRecentActivity">
+            <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+              <h3>Recent Activity</h3>
+              <select class="filter-select" id="activityFilter" onchange="renderAdminDashboard(getCustomerStats())" style="width:auto">
+                <option value="all">All Customers</option>
+                <option value="pending">Pending Submissions</option>
+                <option value="submitted">Submitted</option>
+                <option value="unsigned">Unsigned Docs</option>
+              </select>
+            </div>
+            <table>
+              <thead><tr><th>Customer</th><th>Email</th><th>Phone</th><th>Items</th><th>Weight</th><th>Value</th><th>Docs</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="dashboardTable"></tbody>
+            </table>
+          </div>
+          
+          <!-- Admin: Items Needing Attention -->
+          <div class="card admin-only" id="adminItemsAttention">
+            <div class="card-header"><h3>Recently Added Items</h3></div>
+            <table>
+              <thead><tr><th>Date</th><th>Customer</th><th>Item</th><th>Photo</th><th>Weight</th><th>Value</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="recentItemsTable"></tbody>
+            </table>
+          </div>
+          
+          <!-- Customer: My Recent Items -->
+          <div class="card" id="customerRecentItems"><div class="card-header"><h3>My Recent Items</h3></div><table><thead><tr><th>ID</th><th>Photo</th><th>Description</th><th>Category</th><th>Weight</th><th>Value</th><th>Status</th><th>Actions</th></tr></thead><tbody id="myItemsTable"></tbody></table></div>
         </div>
       </div>
 
       <!-- CUSTOMERS PAGE (Admin Only) -->
       <div class="page" id="customers">
-        <header class="header"><div><h2>All Customers</h2><p>Manage customer accounts</p></div></header>
+        <header class="header">
+          <div><h2>All Customers</h2><p>Manage customer accounts</p></div>
+          <div class="header-actions">
+            <input type="text" class="form-input" id="customerSearch" placeholder="Search customers..." style="width:200px" oninput="renderCustomersTable(getCustomerStats())">
+            <button class="btn btn-secondary" onclick="exportCustomers()">Export</button>
+          </div>
+        </header>
         <div class="content">
-          <div class="card"><table><thead><tr><th>Customer</th><th>Phone</th><th>Email</th><th>Items</th><th>Weight</th><th>Value</th><th>Docs</th><th>Actions</th></tr></thead><tbody id="customersTable"></tbody></table></div>
+          <div class="card"><table><thead><tr><th>Customer</th><th>Phone</th><th>Email</th><th>Items</th><th>Weight</th><th>Value</th><th>Docs</th><th>Status</th><th>Actions</th></tr></thead><tbody id="customersTable"></tbody></table></div>
           
           <!-- Customer Detail Section -->
           <div class="card" id="customerDetailCard" style="display:none">
             <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
               <h3 id="customerDetailName">Customer Details</h3>
-              <button class="action-btn" onclick="closeCustomerDetail()">Close</button>
+              <div>
+                <button class="btn btn-primary" onclick="addItemForCustomer()" style="margin-right:8px;padding:8px 16px">Add Item</button>
+                <button class="action-btn" onclick="closeCustomerDetail()">Close</button>
+              </div>
             </div>
             <div style="padding:20px;background:var(--bg-main);border-bottom:1px solid var(--border)">
-              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+              <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px">
                 <div><strong>Email:</strong> <span id="detailEmail">-</span></div>
                 <div><strong>Phone:</strong> <span id="detailPhone">-</span></div>
                 <div><strong>Signed Up:</strong> <span id="detailSignup">-</span></div>
                 <div><strong>Documents:</strong> <span id="detailDocs">-</span></div>
+                <div><strong>Status:</strong> <span id="detailStatus">-</span></div>
               </div>
             </div>
-            <table><thead><tr><th>Item ID</th><th>Description</th><th>Category</th><th>Qty</th><th>Weight</th><th>Value</th><th>Status</th></tr></thead><tbody id="customerInventoryTable"></tbody></table>
+            <table><thead><tr><th>Item ID</th><th>Photo</th><th>Description</th><th>Category</th><th>Qty</th><th>Weight</th><th>Value</th><th>Status</th><th>Actions</th></tr></thead><tbody id="customerInventoryTable"></tbody></table>
             <div class="totals-row">
               <div class="total-item"><label>Items</label><div class="value" id="detailTotalItems">0</div></div>
               <div class="total-item"><label>Weight</label><div class="value" id="detailTotalWeight">0 lbs</div></div>
@@ -384,13 +438,16 @@
         document.getElementById('welcomeSubtext').textContent = 'Admin Dashboard';
         document.getElementById('customerRecentItems').style.display = 'none';
         document.getElementById('navInventoryText').textContent = 'All Inventory';
+        document.getElementById('customerStatsGrid').style.display = 'none';
+        document.getElementById('customerHeaderActions').style.display = 'none';
       } else {
-        document.getElementById('statCustomersLabel').textContent = 'Items';
         document.getElementById('inventoryTitle').textContent = 'My Items';
         document.getElementById('inventorySubtitle').textContent = 'Track your shipments';
         document.getElementById('welcomeSubtext').textContent = 'Track your shipments to Guinea';
         document.getElementById('customerRecentItems').style.display = '';
         document.getElementById('navInventoryText').textContent = 'My Items';
+        document.getElementById('customerStatsGrid').style.display = 'grid';
+        document.getElementById('customerHeaderActions').style.display = 'flex';
       }
     }
 
@@ -808,10 +865,17 @@
       var stats = getCustomerStats();
       var totalWeight = 0;
       var totalValue = 0;
+      var pendingCount = 0;
+      var submittedCount = 0;
       
       inventory.forEach(function(item) {
         totalWeight += item.weight || 0;
         totalValue += item.value || 0;
+        if (item.status === 'submitted') {
+          submittedCount++;
+        } else {
+          pendingCount++;
+        }
       });
       
       document.getElementById('statWeight').textContent = totalWeight.toFixed(1) + ' lbs';
@@ -822,12 +886,28 @@
       if (userRole === 'admin') {
         document.getElementById('statCustomers').textContent = customers.length;
         document.getElementById('customerCount').textContent = customers.length;
+        document.getElementById('statPending').textContent = pendingCount;
+        document.getElementById('statSubmitted').textContent = submittedCount;
+        
+        // Count unsigned customers
+        var unsignedCount = customers.filter(function(c) { return (c.docs_count || 0) < 3; }).length;
+        document.getElementById('statUnsigned').textContent = unsignedCount;
+        
         renderAdminDashboard(stats);
         renderCustomersTable(stats);
         document.getElementById('submitInventoryBtn').style.display = 'none';
       } else {
-        document.getElementById('statCustomers').textContent = inventory.length;
         renderCustomerDashboard();
+        
+        // Customer stats
+        document.getElementById('myStatWeight').textContent = totalWeight.toFixed(1) + ' lbs';
+        document.getElementById('myStatItems').textContent = inventory.length;
+        document.getElementById('myStatValue').textContent = '$' + totalValue.toLocaleString();
+        
+        var hasSubmitted = inventory.some(function(i) { return i.status === 'submitted'; });
+        var allSubmitted = inventory.length > 0 && inventory.every(function(i) { return i.status === 'submitted'; });
+        var statusText = inventory.length === 0 ? 'No Items' : (allSubmitted ? 'Submitted' : (hasSubmitted ? 'Partial' : 'Pending'));
+        document.getElementById('myStatStatus').textContent = statusText;
         
         // Show submit button only if there are pending items
         var pendingItems = inventory.filter(function(i) { return i.status !== 'submitted'; });
@@ -839,54 +919,148 @@
     }
 
     function renderAdminDashboard(stats) {
+      var filter = document.getElementById('activityFilter').value;
+      
+      // Filter customers based on selection
+      var filteredCustomers = customers.filter(function(c) {
+        if (c.role === 'admin') return false; // Don't show admins
+        var s = stats[c.id] || {items: 0};
+        var customerItems = inventory.filter(function(i) { return i.user_id === c.id; });
+        var hasSubmitted = customerItems.some(function(i) { return i.status === 'submitted'; });
+        var allSubmitted = customerItems.length > 0 && customerItems.every(function(i) { return i.status === 'submitted'; });
+        
+        if (filter === 'pending') return customerItems.length > 0 && !allSubmitted;
+        if (filter === 'submitted') return allSubmitted;
+        if (filter === 'unsigned') return (c.docs_count || 0) < 3;
+        return true;
+      });
+      
       var html = '';
-      customers.slice(0, 10).forEach(function(c) {
+      filteredCustomers.forEach(function(c) {
         var s = stats[c.id] || {items: 0, weight: 0, value: 0};
         var initials = ((c.full_name || 'U')[0]).toUpperCase();
         var docsBadge = c.docs_count >= 3 
           ? '<span class="status-badge received">Signed</span>'
           : '<span class="status-badge" style="background:var(--danger-light);color:var(--danger)">Pending</span>';
         
-        html += '<tr>';
+        // Determine submission status
+        var customerItems = inventory.filter(function(i) { return i.user_id === c.id; });
+        var allSubmitted = customerItems.length > 0 && customerItems.every(function(i) { return i.status === 'submitted'; });
+        var hasItems = customerItems.length > 0;
+        var statusBadge = !hasItems 
+          ? '<span class="status-badge" style="background:#eee;color:#666">No Items</span>'
+          : (allSubmitted 
+            ? '<span class="status-badge received">Submitted</span>'
+            : '<span class="status-badge" style="background:var(--accent);color:#fff">Pending</span>');
+        
+        html += '<tr onclick="viewCustomer(\'' + c.id + '\')" style="cursor:pointer">';
         html += '<td><div class="customer-cell"><div class="customer-avatar">' + initials + '</div>';
         html += '<div class="customer-info"><div class="name">' + (c.full_name || 'Unknown') + '</div>';
-        html += '<div class="id">' + (c.role || 'customer') + '</div></div></div></td>';
+        html += '<div class="id">' + c.id.substring(0, 8) + '</div></div></div></td>';
+        html += '<td>' + (c.email || '-') + '</td>';
+        html += '<td>' + (c.phone || '-') + '</td>';
         html += '<td>' + s.items + '</td>';
         html += '<td class="weight-cell">' + s.weight.toFixed(1) + ' lbs</td>';
         html += '<td class="value-cell">$' + s.value.toLocaleString() + '</td>';
         html += '<td>' + docsBadge + '</td>';
+        html += '<td>' + statusBadge + '</td>';
+        html += '<td><button class="action-btn" onclick="event.stopPropagation();viewCustomer(\'' + c.id + '\')">View</button></td>';
         html += '</tr>';
       });
       
-      document.getElementById('dashboardTable').innerHTML = html || '<tr><td colspan="5" style="text-align:center;padding:40px">No customers</td></tr>';
+      document.getElementById('dashboardTable').innerHTML = html || '<tr><td colspan="9" style="text-align:center;padding:40px">No customers match filter</td></tr>';
+      
+      // Render recent items
+      renderRecentItems();
+    }
+
+    function renderRecentItems() {
+      var recentItems = inventory.slice(0, 10);
+      var html = '';
+      
+      recentItems.forEach(function(item) {
+        var customer = customers.find(function(c) { return c.id === item.user_id; });
+        var date = item.created_at ? new Date(item.created_at).toLocaleDateString() : '-';
+        var photoHtml = item.photo_url 
+          ? '<img src="' + item.photo_url + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer" onclick="viewPhoto(\'' + item.photo_url + '\')">'
+          : '<span style="color:var(--text-muted);font-size:11px">No photo</span>';
+        var statusBadge = item.status === 'submitted'
+          ? '<span class="status-badge received">Submitted</span>'
+          : '<span class="status-badge" style="background:var(--accent);color:#fff">Pending</span>';
+        
+        html += '<tr>';
+        html += '<td>' + date + '</td>';
+        html += '<td>' + (customer ? customer.full_name : 'Unknown') + '</td>';
+        html += '<td>' + item.description + '</td>';
+        html += '<td>' + photoHtml + '</td>';
+        html += '<td class="weight-cell">' + (item.weight || 0) + ' lbs</td>';
+        html += '<td class="value-cell">$' + (item.value || 0).toLocaleString() + '</td>';
+        html += '<td>' + statusBadge + '</td>';
+        html += '<td><button class="action-btn" onclick="editItem(' + item.id + ')">Edit</button></td>';
+        html += '</tr>';
+      });
+      
+      document.getElementById('recentItemsTable').innerHTML = html || '<tr><td colspan="8" style="text-align:center;padding:40px">No items yet</td></tr>';
     }
 
     function renderCustomerDashboard() {
       var html = '';
       inventory.slice(0, 5).forEach(function(item) {
+        var photoHtml = item.photo_url 
+          ? '<img src="' + item.photo_url + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer" onclick="viewPhoto(\'' + item.photo_url + '\')">'
+          : '<span style="color:var(--text-muted);font-size:11px">No photo</span>';
+        var statusBadge = item.status === 'submitted'
+          ? '<span class="status-badge received">Submitted</span>'
+          : '<span class="status-badge" style="background:var(--accent);color:#fff">Pending</span>';
+        var actionBtns = item.status !== 'submitted'
+          ? '<button class="action-btn" onclick="editItem(' + item.id + ')">Edit</button>'
+          : '<span style="color:var(--text-muted);font-size:11px">Locked</span>';
+        
         html += '<tr>';
         html += '<td style="font-family:Space Mono,monospace;font-size:12px">' + item.item_id + '</td>';
+        html += '<td>' + photoHtml + '</td>';
         html += '<td>' + item.description + '</td>';
         html += '<td style="text-transform:capitalize">' + item.category + '</td>';
         html += '<td class="weight-cell">' + (item.weight || 0) + ' lbs</td>';
         html += '<td class="value-cell">$' + (item.value || 0).toLocaleString() + '</td>';
-        html += '<td><span class="status-badge received">' + (item.status || 'received') + '</span></td>';
+        html += '<td>' + statusBadge + '</td>';
+        html += '<td>' + actionBtns + '</td>';
         html += '</tr>';
       });
       
-      document.getElementById('myItemsTable').innerHTML = html || '<tr><td colspan="6" style="text-align:center;padding:40px">No items yet</td></tr>';
+      document.getElementById('myItemsTable').innerHTML = html || '<tr><td colspan="8" style="text-align:center;padding:40px">No items yet</td></tr>';
     }
 
     function renderCustomersTable(stats) {
+      var searchTerm = (document.getElementById('customerSearch').value || '').toLowerCase();
       var html = '';
-      customers.forEach(function(c) {
+      
+      var filteredCustomers = customers.filter(function(c) {
+        if (c.role === 'admin') return false;
+        if (!searchTerm) return true;
+        return (c.full_name || '').toLowerCase().includes(searchTerm) ||
+               (c.email || '').toLowerCase().includes(searchTerm) ||
+               (c.phone || '').toLowerCase().includes(searchTerm);
+      });
+      
+      filteredCustomers.forEach(function(c) {
         var s = stats[c.id] || {items: 0, weight: 0, value: 0};
         var initials = ((c.full_name || 'U')[0]).toUpperCase();
         var docsBadge = c.docs_count >= 3
           ? '<span class="status-badge received">' + c.docs_count + '/3</span>'
           : '<span class="status-badge" style="background:var(--danger-light);color:var(--danger)">' + (c.docs_count || 0) + '/3</span>';
         
-        html += '<tr>';
+        // Determine submission status
+        var customerItems = inventory.filter(function(i) { return i.user_id === c.id; });
+        var allSubmitted = customerItems.length > 0 && customerItems.every(function(i) { return i.status === 'submitted'; });
+        var hasItems = customerItems.length > 0;
+        var statusBadge = !hasItems 
+          ? '<span class="status-badge" style="background:#eee;color:#666">No Items</span>'
+          : (allSubmitted 
+            ? '<span class="status-badge received">Submitted</span>'
+            : '<span class="status-badge" style="background:var(--accent);color:#fff">Pending</span>');
+        
+        html += '<tr onclick="viewCustomer(\'' + c.id + '\')" style="cursor:pointer">';
         html += '<td><div class="customer-cell"><div class="customer-avatar">' + initials + '</div>';
         html += '<div class="customer-info"><div class="name">' + (c.full_name || 'Unknown') + '</div>';
         html += '<div class="id">' + c.id.substring(0, 8) + '</div></div></div></td>';
@@ -896,19 +1070,33 @@
         html += '<td class="weight-cell">' + s.weight.toFixed(1) + ' lbs</td>';
         html += '<td class="value-cell">$' + s.value.toLocaleString() + '</td>';
         html += '<td>' + docsBadge + '</td>';
-        html += '<td><button class="action-btn" onclick="viewCustomer(\'' + c.id + '\')">View</button></td>';
+        html += '<td>' + statusBadge + '</td>';
+        html += '<td><button class="action-btn" onclick="event.stopPropagation();viewCustomer(\'' + c.id + '\')">View</button></td>';
         html += '</tr>';
       });
       
-      document.getElementById('customersTable').innerHTML = html || '<tr><td colspan="8" style="text-align:center;padding:40px">No customers</td></tr>';
+      document.getElementById('customersTable').innerHTML = html || '<tr><td colspan="9" style="text-align:center;padding:40px">No customers</td></tr>';
     }
 
+    var selectedCustomerId = null;
+    
     function viewCustomer(customerId) {
+      selectedCustomerId = customerId;
       var customer = customers.find(function(c) { return c.id === customerId; });
       if (!customer) return;
       
+      // Navigate to customers page if not there
+      document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+      document.querySelector('[data-page="customers"]').classList.add('active');
+      document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+      document.getElementById('customers').classList.add('active');
+      
       // Get customer's inventory
       var customerItems = inventory.filter(function(i) { return i.user_id === customerId; });
+      
+      // Determine status
+      var allSubmitted = customerItems.length > 0 && customerItems.every(function(i) { return i.status === 'submitted'; });
+      var statusText = customerItems.length === 0 ? 'No Items' : (allSubmitted ? 'Submitted' : 'Pending');
       
       // Update detail header
       document.getElementById('customerDetailName').textContent = (customer.full_name || 'Unknown') + "'s Inventory";
@@ -916,197 +1104,9 @@
       document.getElementById('detailPhone').textContent = customer.phone || '-';
       document.getElementById('detailSignup').textContent = customer.created_at ? new Date(customer.created_at).toLocaleDateString() : '-';
       document.getElementById('detailDocs').textContent = (customer.docs_count || 0) + '/3 signed';
+      document.getElementById('detailStatus').textContent = statusText;
       
       // Render customer's inventory
       var html = '';
       var totalWeight = 0;
       var totalValue = 0;
-      
-      customerItems.forEach(function(item) {
-        var statusClass = item.status === 'submitted' ? 'received' : '';
-        html += '<tr>';
-        html += '<td style="font-family:Space Mono,monospace;font-size:12px">' + item.item_id + '</td>';
-        html += '<td>' + item.description + '</td>';
-        html += '<td style="text-transform:capitalize">' + item.category + '</td>';
-        html += '<td>' + (item.quantity || 1) + '</td>';
-        html += '<td class="weight-cell">' + (item.weight || 0) + ' lbs</td>';
-        html += '<td class="value-cell">$' + (item.value || 0).toLocaleString() + '</td>';
-        html += '<td><span class="status-badge ' + statusClass + '">' + (item.status || 'received') + '</span></td>';
-        html += '</tr>';
-        
-        totalWeight += item.weight || 0;
-        totalValue += item.value || 0;
-      });
-      
-      document.getElementById('customerInventoryTable').innerHTML = html || '<tr><td colspan="7" style="text-align:center;padding:40px">No items</td></tr>';
-      document.getElementById('detailTotalItems').textContent = customerItems.length;
-      document.getElementById('detailTotalWeight').textContent = totalWeight.toFixed(1) + ' lbs';
-      document.getElementById('detailTotalValue').textContent = '$' + totalValue.toLocaleString();
-      
-      // Show the detail card
-      document.getElementById('customerDetailCard').style.display = 'block';
-      document.getElementById('customerDetailCard').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function closeCustomerDetail() {
-      document.getElementById('customerDetailCard').style.display = 'none';
-    }
-
-    function renderInventory() {
-      var filterCustomer = document.getElementById('filterCustomer').value;
-      var filterCategory = document.getElementById('filterCategory').value;
-      
-      var filtered = inventory.filter(function(item) {
-        if (filterCustomer && item.user_id !== filterCustomer) return false;
-        if (filterCategory && item.category !== filterCategory) return false;
-        return true;
-      });
-      
-      var html = '';
-      var totalWeight = 0;
-      var totalValue = 0;
-      
-      filtered.forEach(function(item) {
-        var customerCol = '';
-        if (userRole === 'admin') {
-          var customer = customers.find(function(c) { return c.id === item.user_id; });
-          customerCol = '<td>' + (customer ? customer.full_name : 'Unknown') + '</td>';
-        }
-        
-        // Photo thumbnail
-        var photoHtml = item.photo_url 
-          ? '<img src="' + item.photo_url + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer" onclick="viewPhoto(\'' + item.photo_url + '\')">'
-          : '<span style="color:var(--text-muted);font-size:11px">No photo</span>';
-        
-        // Action buttons - Edit and Delete for non-submitted items
-        var actionBtns = '';
-        if (item.status !== 'submitted' || userRole === 'admin') {
-          actionBtns += '<button class="action-btn" onclick="editItem(' + item.id + ')" style="margin-right:6px">Edit</button>';
-          actionBtns += '<button class="action-btn danger" onclick="deleteItem(' + item.id + ')">Delete</button>';
-        } else {
-          actionBtns = '<span style="color:var(--text-muted);font-size:12px">Submitted</span>';
-        }
-        
-        html += '<tr>';
-        html += '<td style="font-family:Space Mono,monospace;font-size:12px">' + item.item_id + '</td>';
-        html += customerCol;
-        html += '<td>' + photoHtml + '</td>';
-        html += '<td>' + item.description + '</td>';
-        html += '<td style="text-transform:capitalize">' + item.category + '</td>';
-        html += '<td class="weight-cell">' + (item.weight || 0) + ' lbs</td>';
-        html += '<td class="value-cell">$' + (item.value || 0).toLocaleString() + '</td>';
-        html += '<td>' + actionBtns + '</td>';
-        html += '</tr>';
-        
-        totalWeight += item.weight || 0;
-        totalValue += item.value || 0;
-      });
-      
-      var emptyColspan = userRole === 'admin' ? '8' : '7';
-      document.getElementById('inventoryTable').innerHTML = html || '<tr><td colspan="' + emptyColspan + '" style="text-align:center;padding:40px">No items</td></tr>';
-      document.getElementById('totalItems').textContent = filtered.length;
-      document.getElementById('totalWeight').textContent = totalWeight.toFixed(1) + ' lbs';
-      document.getElementById('totalValue').textContent = '$' + totalValue.toLocaleString();
-    }
-
-    function viewPhoto(url) {
-      window.open(url, '_blank');
-    }
-
-    function renderDocs() {
-      var html = '';
-      signedDocs.forEach(function(doc) {
-        var date = new Date(doc.signed_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'});
-        html += '<tr>';
-        html += '<td>' + doc.doc_title + '</td>';
-        html += '<td>' + date + '</td>';
-        html += '<td style="font-family:Space Mono,monospace;font-style:italic">' + doc.signature + '</td>';
-        html += '<td><button class="action-btn" onclick="downloadDoc(\'' + doc.doc_type + '\',\'' + doc.doc_title + '\',\'' + doc.signature + '\',\'' + doc.signed_at + '\')">Download</button></td>';
-        html += '</tr>';
-      });
-      
-      document.getElementById('docsTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text-muted)">No documents</td></tr>';
-    }
-
-    function downloadDoc(type, title, sig, date) {
-      var content = 'GUINEA CARGO SERVICES\n';
-      content += '========================\n\n';
-      content += 'Document: ' + title + '\n';
-      content += 'Signed By: ' + sig + '\n';
-      content += 'Date: ' + new Date(date).toLocaleDateString() + '\n';
-      content += 'User: ' + currentUser.email + '\n\n';
-      content += 'This document was electronically signed.\n';
-      
-      var blob = new Blob([content], {type: 'text/plain'});
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = type + '_signed.txt';
-      a.click();
-    }
-
-    // ==================== DROPDOWNS ====================
-    function populateDropdowns() {
-      if (userRole === 'admin') {
-        var opts = '<option value="">Select...</option>';
-        customers.forEach(function(c) {
-          opts += '<option value="' + c.id + '">' + (c.full_name || 'Unknown') + '</option>';
-        });
-        document.getElementById('itemCustomer').innerHTML = opts;
-        document.getElementById('filterCustomer').innerHTML = '<option value="">All</option>' + opts;
-      }
-    }
-
-    // ==================== MODALS ====================
-    function openModal(id) {
-      document.getElementById(id).classList.add('active');
-      populateDropdowns();
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('active');
-    }
-
-    // ==================== NAVIGATION ====================
-    document.querySelectorAll('.nav-item').forEach(function(item) {
-      item.addEventListener('click', function() {
-        var page = this.getAttribute('data-page');
-        if (!page) return;
-        
-        document.querySelectorAll('.nav-item').forEach(function(n) {
-          n.classList.remove('active');
-        });
-        this.classList.add('active');
-        
-        document.querySelectorAll('.page').forEach(function(p) {
-          p.classList.remove('active');
-        });
-        document.getElementById(page).classList.add('active');
-      });
-    });
-
-    // Close modal on overlay click
-    document.querySelectorAll('.modal-overlay').forEach(function(m) {
-      m.addEventListener('click', function(e) {
-        if (e.target === this) this.classList.remove('active');
-      });
-    });
-
-    // ==================== EXPORT ====================
-    function exportCSV() {
-      var csv = 'ID,Description,Category,Qty,Weight,Value,Status\n';
-      inventory.forEach(function(item) {
-        csv += item.item_id + ',"' + item.description + '",' + item.category + ',' + (item.quantity || 1) + ',' + item.weight + ',' + item.value + ',' + item.status + '\n';
-      });
-      
-      var blob = new Blob([csv], {type: 'text/csv'});
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'items.csv';
-      a.click();
-    }
-
-    // ==================== START ====================
-    document.addEventListener('DOMContentLoaded', initApp);
-  </script>
-</body>
-</html>
