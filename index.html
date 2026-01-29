@@ -529,23 +529,6 @@
   </div>
 
   <!-- ADD/EDIT ITEM MODAL -->
-        <header class="header"><div><h2 id="inventoryTitle">My Items</h2><p id="inventorySubtitle">Track your items</p></div><div class="header-actions"><button class="btn btn-secondary" onclick="exportCSV()">Export CSV</button><button class="btn btn-primary" onclick="openModal('itemModal')">Add Item</button><button class="btn btn-primary" id="submitInventoryBtn" style="background:var(--accent);display:none" onclick="submitInventory()">Submit Final Inventory</button></div></header>
-        <div class="content">
-          <div class="filters admin-only"><select class="filter-select" id="filterCustomer" onchange="renderInventory()"><option value="">All Customers</option></select></div>
-          <div class="filters"><select class="filter-select" id="filterCategory" onchange="renderInventory()"><option value="">All Categories</option><option value="electronics">Electronics</option><option value="clothing">Clothing</option><option value="appliances">Appliances</option><option value="household">Household</option><option value="other">Other</option></select></div>
-          <div class="card"><table><thead><tr><th>ID</th><th class="admin-only">Customer</th><th>Photo</th><th>Description</th><th>Category</th><th>Weight</th><th>Value</th><th>Actions</th></tr></thead><tbody id="inventoryTable"></tbody></table><div class="totals-row"><div class="total-item"><label>Items</label><div class="value" id="totalItems">0</div></div><div class="total-item"><label>Weight</label><div class="value" id="totalWeight">0 lbs</div></div><div class="total-item"><label>Value</label><div class="value primary" id="totalValue">$0</div></div></div></div>
-        </div>
-      </div>
-
-      <!-- DOCUMENTS PAGE -->
-      <div class="page" id="documents">
-        <header class="header"><div><h2>My Documents</h2><p>View and download signed agreements</p></div></header>
-        <div class="content"><div class="card"><div class="card-header"><h3>Signed Documents</h3></div><table><thead><tr><th>Document</th><th>Signed Date</th><th>Signature</th><th>Actions</th></tr></thead><tbody id="docsTable"></tbody></table></div></div>
-      </div>
-    </main>
-  </div>
-
-  <!-- ADD/EDIT ITEM MODAL -->
   <div class="modal-overlay" id="itemModal">
     <div class="modal">
       <div class="modal-header"><h3 id="itemModalTitle">Add Item</h3><button class="modal-close" onclick="closeModal('itemModal')">×</button></div>
