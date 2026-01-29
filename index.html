@@ -115,7 +115,31 @@
       <!-- CUSTOMERS PAGE (Admin Only) -->
       <div class="page" id="customers">
         <header class="header"><div><h2>All Customers</h2><p>Manage customer accounts</p></div></header>
-        <div class="content"><div class="card"><table><thead><tr><th>Customer</th><th>Phone</th><th>Items</th><th>Weight</th><th>Value</th><th>Docs</th></tr></thead><tbody id="customersTable"></tbody></table></div></div>
+        <div class="content">
+          <div class="card"><table><thead><tr><th>Customer</th><th>Phone</th><th>Email</th><th>Items</th><th>Weight</th><th>Value</th><th>Docs</th><th>Actions</th></tr></thead><tbody id="customersTable"></tbody></table></div>
+          
+          <!-- Customer Detail Section -->
+          <div class="card" id="customerDetailCard" style="display:none">
+            <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+              <h3 id="customerDetailName">Customer Details</h3>
+              <button class="action-btn" onclick="closeCustomerDetail()">Close</button>
+            </div>
+            <div style="padding:20px;background:var(--bg-main);border-bottom:1px solid var(--border)">
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+                <div><strong>Email:</strong> <span id="detailEmail">-</span></div>
+                <div><strong>Phone:</strong> <span id="detailPhone">-</span></div>
+                <div><strong>Signed Up:</strong> <span id="detailSignup">-</span></div>
+                <div><strong>Documents:</strong> <span id="detailDocs">-</span></div>
+              </div>
+            </div>
+            <table><thead><tr><th>Item ID</th><th>Description</th><th>Category</th><th>Qty</th><th>Weight</th><th>Value</th><th>Status</th></tr></thead><tbody id="customerInventoryTable"></tbody></table>
+            <div class="totals-row">
+              <div class="total-item"><label>Items</label><div class="value" id="detailTotalItems">0</div></div>
+              <div class="total-item"><label>Weight</label><div class="value" id="detailTotalWeight">0 lbs</div></div>
+              <div class="total-item"><label>Value</label><div class="value primary" id="detailTotalValue">$0</div></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- INVENTORY PAGE -->
@@ -695,14 +719,65 @@
         html += '<div class="customer-info"><div class="name">' + (c.full_name || 'Unknown') + '</div>';
         html += '<div class="id">' + c.id.substring(0, 8) + '</div></div></div></td>';
         html += '<td>' + (c.phone || '-') + '</td>';
+        html += '<td>' + (c.email || '-') + '</td>';
         html += '<td>' + s.items + '</td>';
         html += '<td class="weight-cell">' + s.weight.toFixed(1) + ' lbs</td>';
         html += '<td class="value-cell">$' + s.value.toLocaleString() + '</td>';
         html += '<td>' + docsBadge + '</td>';
+        html += '<td><button class="action-btn" onclick="viewCustomer(\'' + c.id + '\')">View</button></td>';
         html += '</tr>';
       });
       
-      document.getElementById('customersTable').innerHTML = html || '<tr><td colspan="6" style="text-align:center;padding:40px">No customers</td></tr>';
+      document.getElementById('customersTable').innerHTML = html || '<tr><td colspan="8" style="text-align:center;padding:40px">No customers</td></tr>';
+    }
+
+    function viewCustomer(customerId) {
+      var customer = customers.find(function(c) { return c.id === customerId; });
+      if (!customer) return;
+      
+      // Get customer's inventory
+      var customerItems = inventory.filter(function(i) { return i.user_id === customerId; });
+      
+      // Update detail header
+      document.getElementById('customerDetailName').textContent = (customer.full_name || 'Unknown') + "'s Inventory";
+      document.getElementById('detailEmail').textContent = customer.email || '-';
+      document.getElementById('detailPhone').textContent = customer.phone || '-';
+      document.getElementById('detailSignup').textContent = customer.created_at ? new Date(customer.created_at).toLocaleDateString() : '-';
+      document.getElementById('detailDocs').textContent = (customer.docs_count || 0) + '/3 signed';
+      
+      // Render customer's inventory
+      var html = '';
+      var totalWeight = 0;
+      var totalValue = 0;
+      
+      customerItems.forEach(function(item) {
+        var statusClass = item.status === 'submitted' ? 'received' : '';
+        html += '<tr>';
+        html += '<td style="font-family:Space Mono,monospace;font-size:12px">' + item.item_id + '</td>';
+        html += '<td>' + item.description + '</td>';
+        html += '<td style="text-transform:capitalize">' + item.category + '</td>';
+        html += '<td>' + (item.quantity || 1) + '</td>';
+        html += '<td class="weight-cell">' + (item.weight || 0) + ' lbs</td>';
+        html += '<td class="value-cell">$' + (item.value || 0).toLocaleString() + '</td>';
+        html += '<td><span class="status-badge ' + statusClass + '">' + (item.status || 'received') + '</span></td>';
+        html += '</tr>';
+        
+        totalWeight += item.weight || 0;
+        totalValue += item.value || 0;
+      });
+      
+      document.getElementById('customerInventoryTable').innerHTML = html || '<tr><td colspan="7" style="text-align:center;padding:40px">No items</td></tr>';
+      document.getElementById('detailTotalItems').textContent = customerItems.length;
+      document.getElementById('detailTotalWeight').textContent = totalWeight.toFixed(1) + ' lbs';
+      document.getElementById('detailTotalValue').textContent = '$' + totalValue.toLocaleString();
+      
+      // Show the detail card
+      document.getElementById('customerDetailCard').style.display = 'block';
+      document.getElementById('customerDetailCard').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function closeCustomerDetail() {
+      document.getElementById('customerDetailCard').style.display = 'none';
     }
 
     function renderInventory() {
