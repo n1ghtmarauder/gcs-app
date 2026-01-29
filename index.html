@@ -148,7 +148,7 @@
         <div class="content">
           <div class="filters admin-only"><select class="filter-select" id="filterCustomer" onchange="renderInventory()"><option value="">All Customers</option></select></div>
           <div class="filters"><select class="filter-select" id="filterCategory" onchange="renderInventory()"><option value="">All Categories</option><option value="electronics">Electronics</option><option value="clothing">Clothing</option><option value="appliances">Appliances</option><option value="household">Household</option><option value="other">Other</option></select></div>
-          <div class="card"><table><thead><tr><th>ID</th><th class="admin-only">Customer</th><th>Description</th><th>Category</th><th>Weight</th><th>Value</th><th>Actions</th></tr></thead><tbody id="inventoryTable"></tbody></table><div class="totals-row"><div class="total-item"><label>Items</label><div class="value" id="totalItems">0</div></div><div class="total-item"><label>Weight</label><div class="value" id="totalWeight">0 lbs</div></div><div class="total-item"><label>Value</label><div class="value primary" id="totalValue">$0</div></div></div></div>
+          <div class="card"><table><thead><tr><th>ID</th><th class="admin-only">Customer</th><th>Photo</th><th>Description</th><th>Category</th><th>Weight</th><th>Value</th><th>Actions</th></tr></thead><tbody id="inventoryTable"></tbody></table><div class="totals-row"><div class="total-item"><label>Items</label><div class="value" id="totalItems">0</div></div><div class="total-item"><label>Weight</label><div class="value" id="totalWeight">0 lbs</div></div><div class="total-item"><label>Value</label><div class="value primary" id="totalValue">$0</div></div></div></div>
         </div>
       </div>
 
@@ -160,10 +160,10 @@
     </main>
   </div>
 
-  <!-- ADD ITEM MODAL -->
+  <!-- ADD/EDIT ITEM MODAL -->
   <div class="modal-overlay" id="itemModal">
     <div class="modal">
-      <div class="modal-header"><h3>Add Item</h3><button class="modal-close" onclick="closeModal('itemModal')">X</button></div>
+      <div class="modal-header"><h3 id="itemModalTitle">Add Item</h3><button class="modal-close" onclick="closeModal('itemModal')">×</button></div>
       <div class="modal-body">
         <div class="form-grid">
           <div class="form-group full-width admin-only"><label class="form-label">Customer</label><select class="form-input" id="itemCustomer"></select></div>
@@ -172,10 +172,22 @@
           <div class="form-group"><label class="form-label">Quantity</label><input type="number" class="form-input" id="itemQty" value="1" min="1"></div>
           <div class="form-group"><label class="form-label">Weight (lbs)</label><input type="number" class="form-input" id="itemWeight" value="0" step="0.1"></div>
           <div class="form-group"><label class="form-label">Value ($)</label><input type="number" class="form-input" id="itemValue" value="0" step="0.01"></div>
+          <div class="form-group full-width">
+            <label class="form-label">Photo * (JPEG or PNG, max 5MB)</label>
+            <input type="file" class="form-input" id="itemPhoto" accept=".jpg,.jpeg,.png" onchange="previewPhoto(this)" style="padding:8px">
+            <div id="photoPreview" style="margin-top:10px;display:none">
+              <img id="photoPreviewImg" style="max-width:200px;max-height:150px;border-radius:8px;border:1px solid var(--border)">
+              <button type="button" onclick="clearPhoto()" style="margin-left:10px;padding:4px 8px;font-size:12px;cursor:pointer">Remove</button>
+            </div>
+            <div id="currentPhoto" style="margin-top:10px;display:none">
+              <p style="font-size:12px;color:var(--text-secondary);margin-bottom:5px">Current photo:</p>
+              <img id="currentPhotoImg" style="max-width:200px;max-height:150px;border-radius:8px;border:1px solid var(--border)">
+            </div>
+          </div>
           <div class="form-group full-width"><label class="form-label">Notes</label><textarea class="form-input" id="itemNotes" placeholder="Optional notes"></textarea></div>
         </div>
       </div>
-      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('itemModal')">Cancel</button><button class="btn btn-primary" onclick="saveItem()">Add Item</button></div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('itemModal')">Cancel</button><button class="btn btn-primary" id="saveItemBtn" onclick="saveItem()">Add Item</button></div>
     </div>
   </div>
 
@@ -193,6 +205,8 @@
     var inventory = [];
     var signedDocs = [];
     var docsChecked = {1: false, 2: false, 3: false};
+    var editingItemId = null;
+    var selectedPhotoFile = null;
 
     // ==================== INITIALIZATION ====================
     function initApp() {
@@ -539,43 +553,173 @@
     }
 
     // ==================== INVENTORY OPERATIONS ====================
-    function saveItem() {
+    function previewPhoto(input) {
+      var file = input.files[0];
+      if (!file) return;
+      
+      // Validate file type
+      var validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!validTypes.includes(file.type)) {
+        alert('Please select a JPEG or PNG image');
+        input.value = '';
+        return;
+      }
+      
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        input.value = '';
+        return;
+      }
+      
+      selectedPhotoFile = file;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('photoPreviewImg').src = e.target.result;
+        document.getElementById('photoPreview').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearPhoto() {
+      document.getElementById('itemPhoto').value = '';
+      document.getElementById('photoPreview').style.display = 'none';
+      document.getElementById('photoPreviewImg').src = '';
+      selectedPhotoFile = null;
+    }
+
+    async function uploadPhoto(file, itemId) {
+      var fileExt = file.name.split('.').pop();
+      var fileName = itemId + '_' + Date.now() + '.' + fileExt;
+      var filePath = currentUser.id + '/' + fileName;
+      
+      var { data, error } = await sb.storage.from('item-photos').upload(filePath, file);
+      if (error) throw error;
+      
+      var { data: urlData } = sb.storage.from('item-photos').getPublicUrl(filePath);
+      return urlData.publicUrl;
+    }
+
+    async function saveItem() {
       var desc = document.getElementById('itemDesc').value.trim();
       if (!desc) {
         alert('Please enter a description');
         return;
       }
       
-      var item = {
-        item_id: 'INV-' + Date.now(),
-        description: desc,
-        category: document.getElementById('itemCategory').value,
-        quantity: parseInt(document.getElementById('itemQty').value) || 1,
-        weight: parseFloat(document.getElementById('itemWeight').value) || 0,
-        value: parseFloat(document.getElementById('itemValue').value) || 0,
-        notes: document.getElementById('itemNotes').value,
-        status: 'received',
-        user_id: currentUser.id
-      };
-      
-      // Admin can assign to different customer
-      if (userRole === 'admin') {
-        var selectedCustomer = document.getElementById('itemCustomer').value;
-        if (selectedCustomer) {
-          item.user_id = selectedCustomer;
-        }
+      // Require photo for new items (not editing)
+      if (!editingItemId && !selectedPhotoFile) {
+        alert('Please upload a photo of the item');
+        return;
       }
       
-      sb.from('inventory').insert([item]).select().then(function(r) {
-        if (r.error) {
-          alert('Error: ' + r.error.message);
-          return;
+      var btn = document.getElementById('saveItemBtn');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+      
+      try {
+        var photoUrl = null;
+        
+        // Upload photo if selected
+        if (selectedPhotoFile) {
+          var tempId = editingItemId || ('INV-' + Date.now());
+          photoUrl = await uploadPhoto(selectedPhotoFile, tempId);
         }
-        inventory.unshift(r.data[0]);
+        
+        if (editingItemId) {
+          // Update existing item
+          var updateData = {
+            description: desc,
+            category: document.getElementById('itemCategory').value,
+            quantity: parseInt(document.getElementById('itemQty').value) || 1,
+            weight: parseFloat(document.getElementById('itemWeight').value) || 0,
+            value: parseFloat(document.getElementById('itemValue').value) || 0,
+            notes: document.getElementById('itemNotes').value
+          };
+          
+          if (photoUrl) {
+            updateData.photo_url = photoUrl;
+          }
+          
+          var { data, error } = await sb.from('inventory').update(updateData).eq('id', editingItemId).select();
+          if (error) throw error;
+          
+          // Update local state
+          var idx = inventory.findIndex(function(i) { return i.id === editingItemId; });
+          if (idx !== -1) {
+            inventory[idx] = data[0];
+          }
+        } else {
+          // Create new item
+          var item = {
+            item_id: 'INV-' + Date.now(),
+            description: desc,
+            category: document.getElementById('itemCategory').value,
+            quantity: parseInt(document.getElementById('itemQty').value) || 1,
+            weight: parseFloat(document.getElementById('itemWeight').value) || 0,
+            value: parseFloat(document.getElementById('itemValue').value) || 0,
+            notes: document.getElementById('itemNotes').value,
+            status: 'received',
+            user_id: currentUser.id,
+            photo_url: photoUrl
+          };
+          
+          // Admin can assign to different customer
+          if (userRole === 'admin') {
+            var selectedCustomer = document.getElementById('itemCustomer').value;
+            if (selectedCustomer) {
+              item.user_id = selectedCustomer;
+            }
+          }
+          
+          var { data, error } = await sb.from('inventory').insert([item]).select();
+          if (error) throw error;
+          
+          inventory.unshift(data[0]);
+        }
+        
         closeModal('itemModal');
         clearItemForm();
         renderAll();
-      });
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = editingItemId ? 'Save Changes' : 'Add Item';
+      }
+    }
+
+    function editItem(id) {
+      var item = inventory.find(function(i) { return i.id === id; });
+      if (!item) return;
+      
+      // Check if item can be edited (not submitted)
+      if (item.status === 'submitted' && userRole !== 'admin') {
+        alert('Cannot edit submitted items');
+        return;
+      }
+      
+      editingItemId = id;
+      document.getElementById('itemModalTitle').textContent = 'Edit Item';
+      document.getElementById('saveItemBtn').textContent = 'Save Changes';
+      
+      // Fill form with item data
+      document.getElementById('itemDesc').value = item.description || '';
+      document.getElementById('itemCategory').value = item.category || 'electronics';
+      document.getElementById('itemQty').value = item.quantity || 1;
+      document.getElementById('itemWeight').value = item.weight || 0;
+      document.getElementById('itemValue').value = item.value || 0;
+      document.getElementById('itemNotes').value = item.notes || '';
+      
+      // Show current photo if exists
+      if (item.photo_url) {
+        document.getElementById('currentPhotoImg').src = item.photo_url;
+        document.getElementById('currentPhoto').style.display = 'block';
+      } else {
+        document.getElementById('currentPhoto').style.display = 'none';
+      }
+      
+      openModal('itemModal');
     }
 
     function deleteItem(id) {
@@ -636,6 +780,15 @@
       document.getElementById('itemWeight').value = '0';
       document.getElementById('itemValue').value = '0';
       document.getElementById('itemNotes').value = '';
+      document.getElementById('itemPhoto').value = '';
+      document.getElementById('photoPreview').style.display = 'none';
+      document.getElementById('photoPreviewImg').src = '';
+      document.getElementById('currentPhoto').style.display = 'none';
+      document.getElementById('currentPhotoImg').src = '';
+      document.getElementById('itemModalTitle').textContent = 'Add Item';
+      document.getElementById('saveItemBtn').textContent = 'Add Item';
+      editingItemId = null;
+      selectedPhotoFile = null;
     }
 
     // ==================== RENDERING ====================
@@ -820,33 +973,44 @@
           customerCol = '<td>' + (customer ? customer.full_name : 'Unknown') + '</td>';
         }
         
-        // Only show delete button if status is not 'submitted'
-        var actionBtn = '';
-        if (item.status !== 'submitted') {
-          actionBtn = '<button class="action-btn danger" onclick="deleteItem(' + item.id + ')">Delete</button>';
+        // Photo thumbnail
+        var photoHtml = item.photo_url 
+          ? '<img src="' + item.photo_url + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer" onclick="viewPhoto(\'' + item.photo_url + '\')">'
+          : '<span style="color:var(--text-muted);font-size:11px">No photo</span>';
+        
+        // Action buttons - Edit and Delete for non-submitted items
+        var actionBtns = '';
+        if (item.status !== 'submitted' || userRole === 'admin') {
+          actionBtns += '<button class="action-btn" onclick="editItem(' + item.id + ')" style="margin-right:6px">Edit</button>';
+          actionBtns += '<button class="action-btn danger" onclick="deleteItem(' + item.id + ')">Delete</button>';
         } else {
-          actionBtn = '<span style="color:var(--text-muted);font-size:12px">Submitted</span>';
+          actionBtns = '<span style="color:var(--text-muted);font-size:12px">Submitted</span>';
         }
         
         html += '<tr>';
         html += '<td style="font-family:Space Mono,monospace;font-size:12px">' + item.item_id + '</td>';
         html += customerCol;
+        html += '<td>' + photoHtml + '</td>';
         html += '<td>' + item.description + '</td>';
         html += '<td style="text-transform:capitalize">' + item.category + '</td>';
         html += '<td class="weight-cell">' + (item.weight || 0) + ' lbs</td>';
         html += '<td class="value-cell">$' + (item.value || 0).toLocaleString() + '</td>';
-        html += '<td>' + actionBtn + '</td>';
+        html += '<td>' + actionBtns + '</td>';
         html += '</tr>';
         
         totalWeight += item.weight || 0;
         totalValue += item.value || 0;
       });
       
-      var emptyColspan = userRole === 'admin' ? '7' : '6';
+      var emptyColspan = userRole === 'admin' ? '8' : '7';
       document.getElementById('inventoryTable').innerHTML = html || '<tr><td colspan="' + emptyColspan + '" style="text-align:center;padding:40px">No items</td></tr>';
       document.getElementById('totalItems').textContent = filtered.length;
       document.getElementById('totalWeight').textContent = totalWeight.toFixed(1) + ' lbs';
       document.getElementById('totalValue').textContent = '$' + totalValue.toLocaleString();
+    }
+
+    function viewPhoto(url) {
+      window.open(url, '_blank');
     }
 
     function renderDocs() {
