@@ -438,7 +438,11 @@
       sb.auth.signInWithPassword({email: email, password: pw}).then(function(r) {
         btn.disabled = false;
         btn.textContent = 'Sign In';
-        if (r.error) showError(r.error.message);
+        if (r.error) {
+          showError(r.error.message);
+        } else {
+          clearLoginForms();
+        }
       });
     }
 
@@ -466,16 +470,31 @@
           currentUser = r.data.session.user;
           userRole = 'customer';
           userProfile = {full_name: name, phone: phone, role: 'customer'};
+          clearLoginForms();
           showDocsScreen();
         } else {
           // Email confirmation required
           showSuccess('Account created! Check email to verify.');
+          clearLoginForms();
         }
       });
     }
 
     function handleLogout() {
       sb.auth.signOut();
+      clearLoginForms();
+    }
+
+    function clearLoginForms() {
+      document.getElementById('signinEmail').value = '';
+      document.getElementById('signinPassword').value = '';
+      document.getElementById('signupName').value = '';
+      document.getElementById('signupPhone').value = '';
+      document.getElementById('signupEmail').value = '';
+      document.getElementById('signupPassword').value = '';
+      document.getElementById('resetEmail').value = '';
+      document.getElementById('errorMessage').classList.remove('show');
+      document.getElementById('successMessage').classList.remove('show');
     }
 
     // ==================== DATA LOADING ====================
