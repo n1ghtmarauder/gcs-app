@@ -215,118 +215,262 @@
   <div class="app-container" id="appContainer">
     <aside class="sidebar">
       <div class="logo"><h1>GC<span>S</span><span class="role-badge" id="roleBadge">Customer</span></h1><p>Shipping Portal</p></div>
-      <nav class="nav-section">
-        <a class="nav-item active" data-page="dashboard"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Dashboard</a>
-        <a class="nav-item admin-only" data-page="customers"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Customers<span class="nav-badge" id="customerCount">0</span></a>
-        <a class="nav-item" data-page="inventory"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg><span id="navInventoryText">My Items</span><span class="nav-badge" id="inventoryCount">0</span></a>
-        <a class="nav-item" data-page="documents"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Documents</a>
+      
+      <!-- ADMIN NAVIGATION -->
+      <nav class="nav-section" id="adminNav" style="display:none">
+        <a class="nav-item active" data-page="adminDashboard"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Overview</a>
+        <a class="nav-item" data-page="adminCustomers"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Customers<span class="nav-badge" id="adminCustomerCount">0</span></a>
+        <a class="nav-item" data-page="adminInventory"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>All Inventory<span class="nav-badge" id="adminInventoryCount">0</span></a>
+        <a class="nav-item" data-page="adminReports"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Reports</a>
       </nav>
+      
+      <!-- CUSTOMER NAVIGATION -->
+      <nav class="nav-section" id="customerNav">
+        <a class="nav-item active" data-page="customerDashboard"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Dashboard</a>
+        <a class="nav-item" data-page="customerInventory"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>My Items<span class="nav-badge" id="customerInventoryCount">0</span></a>
+        <a class="nav-item" data-page="customerDocuments"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Documents</a>
+      </nav>
+      
       <div class="sidebar-footer"><div class="user-info"><div class="name" id="userName">User</div><div class="email" id="userEmail">-</div></div><button class="logout-btn" onclick="handleLogout()">Sign Out</button></div>
     </aside>
     
     <main class="main">
-      <!-- DASHBOARD PAGE -->
-      <div class="page active" id="dashboard">
-        <header class="header"><div><h2>Dashboard</h2><p>Welcome to Guinea Cargo Services</p></div><div class="header-actions admin-only"><button class="btn btn-secondary" onclick="exportAllData()">Export All</button><button class="btn btn-primary" onclick="openModal('itemModal')">Add Item</button></div><div class="header-actions" id="customerHeaderActions" style="display:none"><button class="btn btn-primary" onclick="openModal('itemModal')">Add Item</button></div></header>
+      <!-- ============================================== -->
+      <!-- ADMIN PAGES -->
+      <!-- ============================================== -->
+      
+      <!-- ADMIN DASHBOARD -->
+      <div class="page" id="adminDashboard">
+        <header class="header"><div><h2>Admin Overview</h2><p>Manage Guinea Cargo Services</p></div><div class="header-actions"><button class="btn btn-secondary" onclick="exportAllData()">Export All</button><button class="btn btn-primary" onclick="refreshData()">Refresh</button></div></header>
         <div class="content">
-          <div class="welcome-card"><h2 id="welcomeText">Welcome!</h2><p id="welcomeSubtext">Manage your shipments</p></div>
+          <div class="welcome-card"><h2 id="adminWelcomeText">Welcome, Admin!</h2><p>Shipment Management Console</p></div>
           
-          <!-- Admin Stats Grid -->
-          <div class="stats-grid admin-only">
-            <div class="stat-card highlight"><div class="stat-label">Total Weight</div><div class="stat-value" id="statWeight">0 lbs</div></div>
-            <div class="stat-card"><div class="stat-label">Customers</div><div class="stat-value" id="statCustomers">0</div></div>
-            <div class="stat-card"><div class="stat-label">Total Value</div><div class="stat-value" id="statValue">$0</div></div>
-            <div class="stat-card"><div class="stat-label">Total Items</div><div class="stat-value" id="statItems">0</div></div>
+          <div class="stats-grid">
+            <div class="stat-card highlight"><div class="stat-label">Total Weight</div><div class="stat-value" id="adminStatWeight">0 lbs</div></div>
+            <div class="stat-card"><div class="stat-label">Customers</div><div class="stat-value" id="adminStatCustomers">0</div></div>
+            <div class="stat-card"><div class="stat-label">Total Value</div><div class="stat-value" id="adminStatValue">$0</div></div>
+            <div class="stat-card"><div class="stat-label">Total Items</div><div class="stat-value" id="adminStatItems">0</div></div>
           </div>
           
-          <!-- Admin Secondary Stats -->
-          <div class="stats-grid admin-only" style="grid-template-columns:repeat(3,1fr)">
-            <div class="stat-card"><div class="stat-label">Pending Submissions</div><div class="stat-value" id="statPending" style="color:var(--accent)">0</div></div>
-            <div class="stat-card"><div class="stat-label">Submitted Items</div><div class="stat-value" id="statSubmitted" style="color:var(--success)">0</div></div>
-            <div class="stat-card"><div class="stat-label">Unsigned Customers</div><div class="stat-value" id="statUnsigned" style="color:var(--danger)">0</div></div>
+          <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+            <div class="stat-card"><div class="stat-label">Pending Items</div><div class="stat-value" id="adminStatPending" style="color:var(--accent)">0</div></div>
+            <div class="stat-card"><div class="stat-label">Submitted Items</div><div class="stat-value" id="adminStatSubmitted" style="color:var(--success)">0</div></div>
+            <div class="stat-card"><div class="stat-label">Unsigned Customers</div><div class="stat-value" id="adminStatUnsigned" style="color:var(--danger)">0</div></div>
           </div>
           
-          <!-- Customer Stats Grid -->
-          <div class="stats-grid" id="customerStatsGrid" style="display:none">
-            <div class="stat-card highlight"><div class="stat-label">My Weight</div><div class="stat-value" id="myStatWeight">0 lbs</div></div>
-            <div class="stat-card"><div class="stat-label">My Items</div><div class="stat-value" id="myStatItems">0</div></div>
-            <div class="stat-card"><div class="stat-label">My Value</div><div class="stat-value" id="myStatValue">$0</div></div>
-            <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value" id="myStatStatus" style="font-size:16px">-</div></div>
-          </div>
-          
-          <!-- Admin: Recent Activity -->
-          <div class="card admin-only" id="adminRecentActivity">
+          <div class="card">
             <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
-              <h3>Recent Activity</h3>
-              <select class="filter-select" id="activityFilter" onchange="renderAdminDashboard(getCustomerStats())" style="width:auto">
-                <option value="all">All Customers</option>
-                <option value="pending">Pending Submissions</option>
-                <option value="submitted">Submitted</option>
-                <option value="unsigned">Unsigned Docs</option>
-              </select>
+              <h3>Recent Customers</h3>
+              <a href="#" onclick="navigateTo('adminCustomers');return false;" style="color:var(--primary);font-size:13px">View All →</a>
             </div>
             <table>
-              <thead><tr><th>Customer</th><th>Email</th><th>Phone</th><th>Items</th><th>Weight</th><th>Value</th><th>Docs</th><th>Status</th><th>Actions</th></tr></thead>
-              <tbody id="dashboardTable"></tbody>
+              <thead><tr><th>Customer</th><th>Email</th><th>Items</th><th>Weight</th><th>Value</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="adminRecentCustomersTable"></tbody>
             </table>
           </div>
           
-          <!-- Admin: Items Needing Attention -->
-          <div class="card admin-only" id="adminItemsAttention">
-            <div class="card-header"><h3>Recently Added Items</h3></div>
+          <div class="card">
+            <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+              <h3>Recent Items</h3>
+              <a href="#" onclick="navigateTo('adminInventory');return false;" style="color:var(--primary);font-size:13px">View All →</a>
+            </div>
             <table>
-              <thead><tr><th>Date</th><th>Customer</th><th>Item</th><th>Photo</th><th>Weight</th><th>Value</th><th>Status</th><th>Actions</th></tr></thead>
-              <tbody id="recentItemsTable"></tbody>
+              <thead><tr><th>Date</th><th>Customer</th><th>Description</th><th>Weight</th><th>Value</th><th>Status</th></tr></thead>
+              <tbody id="adminRecentItemsTable"></tbody>
             </table>
           </div>
-          
-          <!-- Customer: My Recent Items -->
-          <div class="card" id="customerRecentItems"><div class="card-header"><h3>My Recent Items</h3></div><table><thead><tr><th>ID</th><th>Photo</th><th>Description</th><th>Category</th><th>Weight</th><th>Value</th><th>Status</th><th>Actions</th></tr></thead><tbody id="myItemsTable"></tbody></table></div>
         </div>
       </div>
 
-      <!-- CUSTOMERS PAGE (Admin Only) -->
-      <div class="page" id="customers">
+      <!-- ADMIN CUSTOMERS PAGE -->
+      <div class="page" id="adminCustomers">
         <header class="header">
-          <div><h2>All Customers</h2><p>Manage customer accounts</p></div>
+          <div><h2>All Customers</h2><p>Manage customer accounts and inventory</p></div>
           <div class="header-actions">
-            <input type="text" class="form-input" id="customerSearch" placeholder="Search customers..." style="width:200px" oninput="renderCustomersTable(getCustomerStats())">
+            <input type="text" class="form-input" id="adminCustomerSearch" placeholder="Search..." style="width:200px" oninput="renderAdminCustomers()">
             <button class="btn btn-secondary" onclick="exportCustomers()">Export</button>
           </div>
         </header>
         <div class="content">
-          <div class="card"><table><thead><tr><th>Customer</th><th>Phone</th><th>Email</th><th>Items</th><th>Weight</th><th>Value</th><th>Docs</th><th>Status</th><th>Actions</th></tr></thead><tbody id="customersTable"></tbody></table></div>
+          <div class="filters">
+            <select class="filter-select" id="adminCustomerFilter" onchange="renderAdminCustomers()">
+              <option value="all">All Customers</option>
+              <option value="with-items">With Items</option>
+              <option value="no-items">No Items</option>
+              <option value="pending">Pending Submission</option>
+              <option value="submitted">Submitted</option>
+              <option value="unsigned">Unsigned Docs</option>
+            </select>
+          </div>
+          <div class="card">
+            <table>
+              <thead><tr><th>Customer</th><th>Phone</th><th>Email</th><th>Items</th><th>Weight</th><th>Value</th><th>Docs</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="adminCustomersTable"></tbody>
+            </table>
+          </div>
           
-          <!-- Customer Detail Section -->
-          <div class="card" id="customerDetailCard" style="display:none">
-            <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
-              <h3 id="customerDetailName">Customer Details</h3>
+          <!-- Customer Detail Panel -->
+          <div class="card" id="adminCustomerDetail" style="display:none">
+            <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;background:var(--primary);color:#fff;margin:-1px;padding:20px 24px">
               <div>
-                <button class="btn btn-primary" onclick="addItemForCustomer()" style="margin-right:8px;padding:8px 16px">Add Item</button>
-                <button class="action-btn" onclick="closeCustomerDetail()">Close</button>
+                <h3 id="adminDetailName" style="margin-bottom:4px">Customer Name</h3>
+                <span id="adminDetailEmail" style="opacity:0.8;font-size:13px">email@example.com</span>
+              </div>
+              <div>
+                <button class="btn" onclick="addItemForSelectedCustomer()" style="background:var(--accent);color:#000;margin-right:8px">Add Item</button>
+                <button class="btn" onclick="closeAdminCustomerDetail()" style="background:rgba(255,255,255,0.2);color:#fff">Close</button>
               </div>
             </div>
-            <div style="padding:20px;background:var(--bg-main);border-bottom:1px solid var(--border)">
-              <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px">
-                <div><strong>Email:</strong> <span id="detailEmail">-</span></div>
-                <div><strong>Phone:</strong> <span id="detailPhone">-</span></div>
-                <div><strong>Signed Up:</strong> <span id="detailSignup">-</span></div>
-                <div><strong>Documents:</strong> <span id="detailDocs">-</span></div>
-                <div><strong>Status:</strong> <span id="detailStatus">-</span></div>
-              </div>
+            <div style="padding:20px;background:var(--bg-main);display:grid;grid-template-columns:repeat(5,1fr);gap:16px;font-size:13px">
+              <div><strong>Phone:</strong><br><span id="adminDetailPhone">-</span></div>
+              <div><strong>Signed Up:</strong><br><span id="adminDetailSignup">-</span></div>
+              <div><strong>Documents:</strong><br><span id="adminDetailDocs">-</span></div>
+              <div><strong>Total Weight:</strong><br><span id="adminDetailWeight">-</span></div>
+              <div><strong>Total Value:</strong><br><span id="adminDetailValue">-</span></div>
             </div>
-            <table><thead><tr><th>Item ID</th><th>Photo</th><th>Description</th><th>Category</th><th>Qty</th><th>Weight</th><th>Value</th><th>Status</th><th>Actions</th></tr></thead><tbody id="customerInventoryTable"></tbody></table>
+            <table>
+              <thead><tr><th>Item ID</th><th>Photo</th><th>Description</th><th>Category</th><th>Qty</th><th>Weight</th><th>Value</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="adminCustomerItemsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN ALL INVENTORY PAGE -->
+      <div class="page" id="adminInventory">
+        <header class="header">
+          <div><h2>All Inventory</h2><p>View and manage all customer items</p></div>
+          <div class="header-actions">
+            <button class="btn btn-secondary" onclick="exportCSV()">Export CSV</button>
+            <button class="btn btn-primary" onclick="openModal('itemModal')">Add Item</button>
+          </div>
+        </header>
+        <div class="content">
+          <div class="filters" style="flex-wrap:wrap;gap:12px">
+            <select class="filter-select" id="adminInvCustomerFilter" onchange="renderAdminInventory()">
+              <option value="">All Customers</option>
+            </select>
+            <select class="filter-select" id="adminInvCategoryFilter" onchange="renderAdminInventory()">
+              <option value="">All Categories</option>
+              <option value="electronics">Electronics</option>
+              <option value="clothing">Clothing</option>
+              <option value="appliances">Appliances</option>
+              <option value="household">Household</option>
+              <option value="other">Other</option>
+            </select>
+            <select class="filter-select" id="adminInvStatusFilter" onchange="renderAdminInventory()">
+              <option value="">All Status</option>
+              <option value="received">Pending</option>
+              <option value="submitted">Submitted</option>
+            </select>
+          </div>
+          <div class="card">
+            <table>
+              <thead><tr><th>ID</th><th>Customer</th><th>Photo</th><th>Description</th><th>Category</th><th>Weight</th><th>Value</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="adminInventoryTable"></tbody>
+            </table>
             <div class="totals-row">
-              <div class="total-item"><label>Items</label><div class="value" id="detailTotalItems">0</div></div>
-              <div class="total-item"><label>Weight</label><div class="value" id="detailTotalWeight">0 lbs</div></div>
-              <div class="total-item"><label>Value</label><div class="value primary" id="detailTotalValue">$0</div></div>
+              <div class="total-item"><label>Items</label><div class="value" id="adminInvTotalItems">0</div></div>
+              <div class="total-item"><label>Weight</label><div class="value" id="adminInvTotalWeight">0 lbs</div></div>
+              <div class="total-item"><label>Value</label><div class="value primary" id="adminInvTotalValue">$0</div></div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- INVENTORY PAGE -->
-      <div class="page" id="inventory">
+      <!-- ADMIN REPORTS PAGE -->
+      <div class="page" id="adminReports">
+        <header class="header"><div><h2>Reports</h2><p>Export and analyze data</p></div></header>
+        <div class="content">
+          <div class="stats-grid" style="grid-template-columns:repeat(2,1fr)">
+            <div class="card" style="cursor:pointer" onclick="exportAllData()">
+              <div class="card-header"><h3>📊 Full Export</h3></div>
+              <div style="padding:20px;color:var(--text-secondary)">Export all customers and inventory data to CSV</div>
+            </div>
+            <div class="card" style="cursor:pointer" onclick="exportCustomers()">
+              <div class="card-header"><h3>👥 Customers Report</h3></div>
+              <div style="padding:20px;color:var(--text-secondary)">Export customer list with totals</div>
+            </div>
+            <div class="card" style="cursor:pointer" onclick="exportCSV()">
+              <div class="card-header"><h3>📦 Inventory Report</h3></div>
+              <div style="padding:20px;color:var(--text-secondary)">Export all inventory items</div>
+            </div>
+            <div class="card" style="cursor:pointer" onclick="exportSubmitted()">
+              <div class="card-header"><h3>✅ Submitted Items</h3></div>
+              <div style="padding:20px;color:var(--text-secondary)">Export only submitted items ready for shipping</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- CUSTOMER PAGES -->
+      <!-- ============================================== -->
+      
+      <!-- CUSTOMER DASHBOARD -->
+      <div class="page" id="customerDashboard">
+        <header class="header"><div><h2>My Dashboard</h2><p>Track your shipments to Guinea</p></div><div class="header-actions"><button class="btn btn-primary" onclick="openModal('itemModal')">Add Item</button></div></header>
+        <div class="content">
+          <div class="welcome-card"><h2 id="customerWelcomeText">Welcome!</h2><p>Track your shipments to Guinea</p></div>
+          
+          <div class="stats-grid">
+            <div class="stat-card highlight"><div class="stat-label">Total Weight</div><div class="stat-value" id="customerStatWeight">0 lbs</div></div>
+            <div class="stat-card"><div class="stat-label">My Items</div><div class="stat-value" id="customerStatItems">0</div></div>
+            <div class="stat-card"><div class="stat-label">Total Value</div><div class="stat-value" id="customerStatValue">$0</div></div>
+            <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value" id="customerStatStatus" style="font-size:14px">-</div></div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header"><h3>My Recent Items</h3></div>
+            <table>
+              <thead><tr><th>ID</th><th>Photo</th><th>Description</th><th>Weight</th><th>Value</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="customerRecentItemsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- CUSTOMER INVENTORY PAGE -->
+      <div class="page" id="customerInventory">
+        <header class="header">
+          <div><h2>My Items</h2><p>Manage your inventory</p></div>
+          <div class="header-actions">
+            <button class="btn btn-primary" onclick="openModal('itemModal')">Add Item</button>
+            <button class="btn" id="customerSubmitBtn" style="background:var(--accent);display:none" onclick="submitInventory()">Submit Final Inventory</button>
+          </div>
+        </header>
+        <div class="content">
+          <div class="card">
+            <table>
+              <thead><tr><th>ID</th><th>Photo</th><th>Description</th><th>Category</th><th>Weight</th><th>Value</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="customerInventoryTable"></tbody>
+            </table>
+            <div class="totals-row">
+              <div class="total-item"><label>Items</label><div class="value" id="customerInvTotalItems">0</div></div>
+              <div class="total-item"><label>Weight</label><div class="value" id="customerInvTotalWeight">0 lbs</div></div>
+              <div class="total-item"><label>Value</label><div class="value primary" id="customerInvTotalValue">$0</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CUSTOMER DOCUMENTS PAGE -->
+      <div class="page" id="customerDocuments">
+        <header class="header"><div><h2>My Documents</h2><p>View signed agreements</p></div></header>
+        <div class="content">
+          <div class="card">
+            <table>
+              <thead><tr><th>Document</th><th>Signed Date</th><th>Signature</th><th>Actions</th></tr></thead>
+              <tbody id="customerDocsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ADD/EDIT ITEM MODAL -->
         <header class="header"><div><h2 id="inventoryTitle">My Items</h2><p id="inventorySubtitle">Track your items</p></div><div class="header-actions"><button class="btn btn-secondary" onclick="exportCSV()">Export CSV</button><button class="btn btn-primary" onclick="openModal('itemModal')">Add Item</button><button class="btn btn-primary" id="submitInventoryBtn" style="background:var(--accent);display:none" onclick="submitInventory()">Submit Final Inventory</button></div></header>
         <div class="content">
           <div class="filters admin-only"><select class="filter-select" id="filterCustomer" onchange="renderInventory()"><option value="">All Customers</option></select></div>
@@ -547,36 +691,38 @@
         name = currentUser.user_metadata.full_name;
       }
       
-      // Update UI
+      // Update common UI
       document.getElementById('userName').textContent = name;
       document.getElementById('userEmail').textContent = currentUser.email || '-';
       document.getElementById('roleBadge').textContent = userRole === 'admin' ? 'Admin' : 'Customer';
-      document.getElementById('welcomeText').textContent = 'Welcome, ' + name + '!';
       
-      // Show/hide admin elements
-      var adminElements = document.querySelectorAll('.admin-only');
-      adminElements.forEach(function(el) {
-        el.style.display = userRole === 'admin' ? '' : 'none';
-      });
-      
-      // Update labels based on role
+      // Show correct navigation and pages based on role
       if (userRole === 'admin') {
-        document.getElementById('statCustomersLabel').textContent = 'Customers';
-        document.getElementById('inventoryTitle').textContent = 'All Inventory';
-        document.getElementById('inventorySubtitle').textContent = 'Manage all items';
-        document.getElementById('welcomeSubtext').textContent = 'Admin Dashboard';
-        document.getElementById('customerRecentItems').style.display = 'none';
-        document.getElementById('navInventoryText').textContent = 'All Inventory';
-        document.getElementById('customerStatsGrid').style.display = 'none';
-        document.getElementById('customerHeaderActions').style.display = 'none';
+        // Show admin interface
+        document.getElementById('adminNav').style.display = 'block';
+        document.getElementById('customerNav').style.display = 'none';
+        document.getElementById('adminWelcomeText').textContent = 'Welcome, ' + name + '!';
+        
+        // Show admin dashboard, hide customer pages
+        document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+        document.getElementById('adminDashboard').classList.add('active');
+        
+        // Set active nav
+        document.querySelectorAll('#adminNav .nav-item').forEach(function(n) { n.classList.remove('active'); });
+        document.querySelector('#adminNav .nav-item[data-page="adminDashboard"]').classList.add('active');
       } else {
-        document.getElementById('inventoryTitle').textContent = 'My Items';
-        document.getElementById('inventorySubtitle').textContent = 'Track your shipments';
-        document.getElementById('welcomeSubtext').textContent = 'Track your shipments to Guinea';
-        document.getElementById('customerRecentItems').style.display = '';
-        document.getElementById('navInventoryText').textContent = 'My Items';
-        document.getElementById('customerStatsGrid').style.display = 'grid';
-        document.getElementById('customerHeaderActions').style.display = 'flex';
+        // Show customer interface
+        document.getElementById('adminNav').style.display = 'none';
+        document.getElementById('customerNav').style.display = 'block';
+        document.getElementById('customerWelcomeText').textContent = 'Welcome, ' + name + '!';
+        
+        // Show customer dashboard, hide admin pages
+        document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+        document.getElementById('customerDashboard').classList.add('active');
+        
+        // Set active nav
+        document.querySelectorAll('#customerNav .nav-item').forEach(function(n) { n.classList.remove('active'); });
+        document.querySelector('#customerNav .nav-item[data-page="customerDashboard"]').classList.add('active');
       }
       
       // Update mobile menu visibility
@@ -1001,6 +1147,15 @@
     }
 
     function renderAll() {
+      if (userRole === 'admin') {
+        renderAdminInterface();
+      } else {
+        renderCustomerInterface();
+      }
+    }
+
+    // ==================== ADMIN RENDERING ====================
+    function renderAdminInterface() {
       var stats = getCustomerStats();
       var totalWeight = 0;
       var totalValue = 0;
@@ -1017,112 +1172,69 @@
         }
       });
       
-      document.getElementById('statWeight').textContent = totalWeight.toFixed(1) + ' lbs';
-      document.getElementById('statValue').textContent = '$' + totalValue.toLocaleString();
-      document.getElementById('statItems').textContent = inventory.length;
-      document.getElementById('inventoryCount').textContent = inventory.length;
+      // Filter out admin users from customer count
+      var customerList = customers.filter(function(c) { return c.role !== 'admin'; });
+      var unsignedCount = customerList.filter(function(c) { return (c.docs_count || 0) < 3; }).length;
       
-      if (userRole === 'admin') {
-        document.getElementById('statCustomers').textContent = customers.length;
-        document.getElementById('customerCount').textContent = customers.length;
-        document.getElementById('statPending').textContent = pendingCount;
-        document.getElementById('statSubmitted').textContent = submittedCount;
-        
-        // Count unsigned customers
-        var unsignedCount = customers.filter(function(c) { return (c.docs_count || 0) < 3; }).length;
-        document.getElementById('statUnsigned').textContent = unsignedCount;
-        
-        renderAdminDashboard(stats);
-        renderCustomersTable(stats);
-        document.getElementById('submitInventoryBtn').style.display = 'none';
-      } else {
-        renderCustomerDashboard();
-        
-        // Customer stats
-        document.getElementById('myStatWeight').textContent = totalWeight.toFixed(1) + ' lbs';
-        document.getElementById('myStatItems').textContent = inventory.length;
-        document.getElementById('myStatValue').textContent = '$' + totalValue.toLocaleString();
-        
-        var hasSubmitted = inventory.some(function(i) { return i.status === 'submitted'; });
-        var allSubmitted = inventory.length > 0 && inventory.every(function(i) { return i.status === 'submitted'; });
-        var statusText = inventory.length === 0 ? 'No Items' : (allSubmitted ? 'Submitted' : (hasSubmitted ? 'Partial' : 'Pending'));
-        document.getElementById('myStatStatus').textContent = statusText;
-        
-        // Show submit button only if there are pending items
-        var pendingItems = inventory.filter(function(i) { return i.status !== 'submitted'; });
-        document.getElementById('submitInventoryBtn').style.display = pendingItems.length > 0 ? '' : 'none';
-      }
+      // Update admin stats
+      document.getElementById('adminStatWeight').textContent = totalWeight.toFixed(1) + ' lbs';
+      document.getElementById('adminStatCustomers').textContent = customerList.length;
+      document.getElementById('adminStatValue').textContent = '$' + totalValue.toLocaleString();
+      document.getElementById('adminStatItems').textContent = inventory.length;
+      document.getElementById('adminStatPending').textContent = pendingCount;
+      document.getElementById('adminStatSubmitted').textContent = submittedCount;
+      document.getElementById('adminStatUnsigned').textContent = unsignedCount;
       
-      populateDropdowns();
-      renderInventory();
+      // Update nav badges
+      document.getElementById('adminCustomerCount').textContent = customerList.length;
+      document.getElementById('adminInventoryCount').textContent = inventory.length;
+      
+      // Render admin tables
+      renderAdminRecentCustomers(stats);
+      renderAdminRecentItems();
+      renderAdminCustomers();
+      renderAdminInventory();
+      populateAdminDropdowns();
     }
 
-    function renderAdminDashboard(stats) {
-      var filter = document.getElementById('activityFilter').value;
-      
-      // Filter customers based on selection
-      var filteredCustomers = customers.filter(function(c) {
-        if (c.role === 'admin') return false; // Don't show admins
-        var s = stats[c.id] || {items: 0};
-        var customerItems = inventory.filter(function(i) { return i.user_id === c.id; });
-        var hasSubmitted = customerItems.some(function(i) { return i.status === 'submitted'; });
-        var allSubmitted = customerItems.length > 0 && customerItems.every(function(i) { return i.status === 'submitted'; });
-        
-        if (filter === 'pending') return customerItems.length > 0 && !allSubmitted;
-        if (filter === 'submitted') return allSubmitted;
-        if (filter === 'unsigned') return (c.docs_count || 0) < 3;
-        return true;
-      });
-      
+    function renderAdminRecentCustomers(stats) {
+      var customerList = customers.filter(function(c) { return c.role !== 'admin'; }).slice(0, 5);
       var html = '';
-      filteredCustomers.forEach(function(c) {
+      
+      customerList.forEach(function(c) {
         var s = stats[c.id] || {items: 0, weight: 0, value: 0};
         var initials = ((c.full_name || 'U')[0]).toUpperCase();
-        var docsBadge = c.docs_count >= 3 
-          ? '<span class="status-badge received">Signed</span>'
-          : '<span class="status-badge" style="background:var(--danger-light);color:var(--danger)">Pending</span>';
-        
-        // Determine submission status
         var customerItems = inventory.filter(function(i) { return i.user_id === c.id; });
         var allSubmitted = customerItems.length > 0 && customerItems.every(function(i) { return i.status === 'submitted'; });
-        var hasItems = customerItems.length > 0;
-        var statusBadge = !hasItems 
+        var statusBadge = customerItems.length === 0 
           ? '<span class="status-badge" style="background:#eee;color:#666">No Items</span>'
           : (allSubmitted 
             ? '<span class="status-badge received">Submitted</span>'
             : '<span class="status-badge" style="background:var(--accent);color:#fff">Pending</span>');
         
-        html += '<tr onclick="viewCustomer(\'' + c.id + '\')" style="cursor:pointer">';
+        html += '<tr style="cursor:pointer" onclick="viewAdminCustomer(\'' + c.id + '\')">';
         html += '<td><div class="customer-cell"><div class="customer-avatar">' + initials + '</div>';
         html += '<div class="customer-info"><div class="name">' + (c.full_name || 'Unknown') + '</div>';
         html += '<div class="id">' + c.id.substring(0, 8) + '</div></div></div></td>';
         html += '<td>' + (c.email || '-') + '</td>';
-        html += '<td>' + (c.phone || '-') + '</td>';
         html += '<td>' + s.items + '</td>';
         html += '<td class="weight-cell">' + s.weight.toFixed(1) + ' lbs</td>';
         html += '<td class="value-cell">$' + s.value.toLocaleString() + '</td>';
-        html += '<td>' + docsBadge + '</td>';
         html += '<td>' + statusBadge + '</td>';
-        html += '<td><button class="action-btn" onclick="event.stopPropagation();viewCustomer(\'' + c.id + '\')">View</button></td>';
+        html += '<td><button class="action-btn" onclick="event.stopPropagation();viewAdminCustomer(\'' + c.id + '\')">View</button></td>';
         html += '</tr>';
       });
       
-      document.getElementById('dashboardTable').innerHTML = html || '<tr><td colspan="9" style="text-align:center;padding:40px">No customers match filter</td></tr>';
-      
-      // Render recent items
-      renderRecentItems();
+      document.getElementById('adminRecentCustomersTable').innerHTML = html || '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted)">No customers yet</td></tr>';
     }
 
-    function renderRecentItems() {
-      var recentItems = inventory.slice(0, 10);
+    function renderAdminRecentItems() {
+      var recentItems = inventory.slice(0, 5);
       var html = '';
       
       recentItems.forEach(function(item) {
         var customer = customers.find(function(c) { return c.id === item.user_id; });
         var date = item.created_at ? new Date(item.created_at).toLocaleDateString() : '-';
-        var photoHtml = item.photo_url 
-          ? '<img src="' + item.photo_url + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer" onclick="viewPhoto(\'' + item.photo_url + '\')">'
-          : '<span style="color:var(--text-muted);font-size:11px">No photo</span>';
         var statusBadge = item.status === 'submitted'
           ? '<span class="status-badge received">Submitted</span>'
           : '<span class="status-badge" style="background:var(--accent);color:#fff">Pending</span>';
@@ -1131,75 +1243,61 @@
         html += '<td>' + date + '</td>';
         html += '<td>' + (customer ? customer.full_name : 'Unknown') + '</td>';
         html += '<td>' + item.description + '</td>';
-        html += '<td>' + photoHtml + '</td>';
         html += '<td class="weight-cell">' + (item.weight || 0) + ' lbs</td>';
         html += '<td class="value-cell">$' + (item.value || 0).toLocaleString() + '</td>';
         html += '<td>' + statusBadge + '</td>';
-        html += '<td><button class="action-btn" onclick="editItem(' + item.id + ')">Edit</button></td>';
         html += '</tr>';
       });
       
-      document.getElementById('recentItemsTable').innerHTML = html || '<tr><td colspan="8" style="text-align:center;padding:40px">No items yet</td></tr>';
+      document.getElementById('adminRecentItemsTable').innerHTML = html || '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted)">No items yet</td></tr>';
     }
 
-    function renderCustomerDashboard() {
-      var html = '';
-      inventory.slice(0, 5).forEach(function(item) {
-        var photoHtml = item.photo_url 
-          ? '<img src="' + item.photo_url + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer" onclick="viewPhoto(\'' + item.photo_url + '\')">'
-          : '<span style="color:var(--text-muted);font-size:11px">No photo</span>';
-        var statusBadge = item.status === 'submitted'
-          ? '<span class="status-badge received">Submitted</span>'
-          : '<span class="status-badge" style="background:var(--accent);color:#fff">Pending</span>';
-        var actionBtns = item.status !== 'submitted'
-          ? '<button class="action-btn" onclick="editItem(' + item.id + ')">Edit</button>'
-          : '<span style="color:var(--text-muted);font-size:11px">Locked</span>';
-        
-        html += '<tr>';
-        html += '<td style="font-family:Space Mono,monospace;font-size:12px">' + item.item_id + '</td>';
-        html += '<td>' + photoHtml + '</td>';
-        html += '<td>' + item.description + '</td>';
-        html += '<td style="text-transform:capitalize">' + item.category + '</td>';
-        html += '<td class="weight-cell">' + (item.weight || 0) + ' lbs</td>';
-        html += '<td class="value-cell">$' + (item.value || 0).toLocaleString() + '</td>';
-        html += '<td>' + statusBadge + '</td>';
-        html += '<td>' + actionBtns + '</td>';
-        html += '</tr>';
-      });
+    function renderAdminCustomers() {
+      var searchTerm = (document.getElementById('adminCustomerSearch').value || '').toLowerCase();
+      var filter = document.getElementById('adminCustomerFilter').value;
+      var stats = getCustomerStats();
       
-      document.getElementById('myItemsTable').innerHTML = html || '<tr><td colspan="8" style="text-align:center;padding:40px">No items yet</td></tr>';
-    }
-
-    function renderCustomersTable(stats) {
-      var searchTerm = (document.getElementById('customerSearch').value || '').toLowerCase();
-      var html = '';
-      
-      var filteredCustomers = customers.filter(function(c) {
+      var customerList = customers.filter(function(c) {
         if (c.role === 'admin') return false;
-        if (!searchTerm) return true;
-        return (c.full_name || '').toLowerCase().includes(searchTerm) ||
-               (c.email || '').toLowerCase().includes(searchTerm) ||
-               (c.phone || '').toLowerCase().includes(searchTerm);
+        
+        // Search filter
+        if (searchTerm) {
+          var match = (c.full_name || '').toLowerCase().includes(searchTerm) ||
+                     (c.email || '').toLowerCase().includes(searchTerm) ||
+                     (c.phone || '').toLowerCase().includes(searchTerm);
+          if (!match) return false;
+        }
+        
+        // Status filter
+        var customerItems = inventory.filter(function(i) { return i.user_id === c.id; });
+        var allSubmitted = customerItems.length > 0 && customerItems.every(function(i) { return i.status === 'submitted'; });
+        
+        if (filter === 'with-items') return customerItems.length > 0;
+        if (filter === 'no-items') return customerItems.length === 0;
+        if (filter === 'pending') return customerItems.length > 0 && !allSubmitted;
+        if (filter === 'submitted') return allSubmitted;
+        if (filter === 'unsigned') return (c.docs_count || 0) < 3;
+        
+        return true;
       });
       
-      filteredCustomers.forEach(function(c) {
+      var html = '';
+      customerList.forEach(function(c) {
         var s = stats[c.id] || {items: 0, weight: 0, value: 0};
         var initials = ((c.full_name || 'U')[0]).toUpperCase();
         var docsBadge = c.docs_count >= 3
           ? '<span class="status-badge received">' + c.docs_count + '/3</span>'
           : '<span class="status-badge" style="background:var(--danger-light);color:var(--danger)">' + (c.docs_count || 0) + '/3</span>';
         
-        // Determine submission status
         var customerItems = inventory.filter(function(i) { return i.user_id === c.id; });
         var allSubmitted = customerItems.length > 0 && customerItems.every(function(i) { return i.status === 'submitted'; });
-        var hasItems = customerItems.length > 0;
-        var statusBadge = !hasItems 
+        var statusBadge = customerItems.length === 0 
           ? '<span class="status-badge" style="background:#eee;color:#666">No Items</span>'
           : (allSubmitted 
             ? '<span class="status-badge received">Submitted</span>'
             : '<span class="status-badge" style="background:var(--accent);color:#fff">Pending</span>');
         
-        html += '<tr onclick="viewCustomer(\'' + c.id + '\')" style="cursor:pointer">';
+        html += '<tr style="cursor:pointer" onclick="viewAdminCustomer(\'' + c.id + '\')">';
         html += '<td><div class="customer-cell"><div class="customer-avatar">' + initials + '</div>';
         html += '<div class="customer-info"><div class="name">' + (c.full_name || 'Unknown') + '</div>';
         html += '<div class="id">' + c.id.substring(0, 8) + '</div></div></div></td>';
@@ -1210,56 +1308,49 @@
         html += '<td class="value-cell">$' + s.value.toLocaleString() + '</td>';
         html += '<td>' + docsBadge + '</td>';
         html += '<td>' + statusBadge + '</td>';
-        html += '<td><button class="action-btn" onclick="event.stopPropagation();viewCustomer(\'' + c.id + '\')">View</button></td>';
+        html += '<td><button class="action-btn" onclick="event.stopPropagation();viewAdminCustomer(\'' + c.id + '\')">View</button></td>';
         html += '</tr>';
       });
       
-      document.getElementById('customersTable').innerHTML = html || '<tr><td colspan="9" style="text-align:center;padding:40px">No customers</td></tr>';
+      document.getElementById('adminCustomersTable').innerHTML = html || '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted)">No customers match filter</td></tr>';
     }
 
     var selectedCustomerId = null;
-    
-    function viewCustomer(customerId) {
+
+    function viewAdminCustomer(customerId) {
       selectedCustomerId = customerId;
       var customer = customers.find(function(c) { return c.id === customerId; });
       if (!customer) return;
       
-      // Navigate to customers page if not there
-      document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
-      document.querySelector('[data-page="customers"]').classList.add('active');
-      document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
-      document.getElementById('customers').classList.add('active');
+      // Navigate to customers page
+      navigateTo('adminCustomers');
       
-      // Get customer's inventory
       var customerItems = inventory.filter(function(i) { return i.user_id === customerId; });
-      
-      // Determine status
-      var allSubmitted = customerItems.length > 0 && customerItems.every(function(i) { return i.status === 'submitted'; });
-      var statusText = customerItems.length === 0 ? 'No Items' : (allSubmitted ? 'Submitted' : 'Pending');
-      
-      // Update detail header
-      document.getElementById('customerDetailName').textContent = (customer.full_name || 'Unknown') + "'s Inventory";
-      document.getElementById('detailEmail').textContent = customer.email || '-';
-      document.getElementById('detailPhone').textContent = customer.phone || '-';
-      document.getElementById('detailSignup').textContent = customer.created_at ? new Date(customer.created_at).toLocaleDateString() : '-';
-      document.getElementById('detailDocs').textContent = (customer.docs_count || 0) + '/3 signed';
-      document.getElementById('detailStatus').textContent = statusText;
-      
-      // Render customer's inventory
-      var html = '';
       var totalWeight = 0;
       var totalValue = 0;
+      customerItems.forEach(function(i) { totalWeight += i.weight || 0; totalValue += i.value || 0; });
       
+      // Update detail panel
+      document.getElementById('adminDetailName').textContent = customer.full_name || 'Unknown';
+      document.getElementById('adminDetailEmail').textContent = customer.email || '-';
+      document.getElementById('adminDetailPhone').textContent = customer.phone || '-';
+      document.getElementById('adminDetailSignup').textContent = customer.created_at ? new Date(customer.created_at).toLocaleDateString() : '-';
+      document.getElementById('adminDetailDocs').textContent = (customer.docs_count || 0) + '/3 signed';
+      document.getElementById('adminDetailWeight').textContent = totalWeight.toFixed(1) + ' lbs';
+      document.getElementById('adminDetailValue').textContent = '$' + totalValue.toLocaleString();
+      
+      // Render customer items
+      var html = '';
       customerItems.forEach(function(item) {
+        var photoHtml = item.photo_url 
+          ? '<img src="' + item.photo_url + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer" onclick="event.stopPropagation();viewPhoto(\'' + item.photo_url + '\')">'
+          : '<span style="color:var(--text-muted);font-size:11px">No photo</span>';
         var statusBadge = item.status === 'submitted'
           ? '<span class="status-badge received">Submitted</span>'
           : '<span class="status-badge" style="background:var(--accent);color:#fff">Pending</span>';
-        var photoHtml = item.photo_url 
-          ? '<img src="' + item.photo_url + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer" onclick="viewPhoto(\'' + item.photo_url + '\')">'
-          : '<span style="color:var(--text-muted);font-size:11px">No photo</span>';
         
         html += '<tr>';
-        html += '<td style="font-family:Space Mono,monospace;font-size:12px">' + item.item_id + '</td>';
+        html += '<td style="font-family:monospace;font-size:11px">' + item.item_id + '</td>';
         html += '<td>' + photoHtml + '</td>';
         html += '<td>' + item.description + '</td>';
         html += '<td style="text-transform:capitalize">' + item.category + '</td>';
@@ -1267,34 +1358,37 @@
         html += '<td class="weight-cell">' + (item.weight || 0) + ' lbs</td>';
         html += '<td class="value-cell">$' + (item.value || 0).toLocaleString() + '</td>';
         html += '<td>' + statusBadge + '</td>';
-        html += '<td><button class="action-btn" onclick="editItem(' + item.id + ')" style="margin-right:4px">Edit</button><button class="action-btn danger" onclick="deleteItem(' + item.id + ')">Delete</button></td>';
+        html += '<td><button class="action-btn" onclick="editItem(' + item.id + ')">Edit</button> <button class="action-btn danger" onclick="deleteItem(' + item.id + ')">Del</button></td>';
         html += '</tr>';
-        
-        totalWeight += item.weight || 0;
-        totalValue += item.value || 0;
       });
       
-      document.getElementById('customerInventoryTable').innerHTML = html || '<tr><td colspan="9" style="text-align:center;padding:40px">No items</td></tr>';
-      document.getElementById('detailTotalItems').textContent = customerItems.length;
-      document.getElementById('detailTotalWeight').textContent = totalWeight.toFixed(1) + ' lbs';
-      document.getElementById('detailTotalValue').textContent = '$' + totalValue.toLocaleString();
+      document.getElementById('adminCustomerItemsTable').innerHTML = html || '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted)">No items</td></tr>';
       
-      // Show the detail card
-      document.getElementById('customerDetailCard').style.display = 'block';
-      document.getElementById('customerDetailCard').scrollIntoView({ behavior: 'smooth' });
+      // Show detail panel
+      document.getElementById('adminCustomerDetail').style.display = 'block';
+      document.getElementById('adminCustomerDetail').scrollIntoView({ behavior: 'smooth' });
     }
 
-    function closeCustomerDetail() {
-      document.getElementById('customerDetailCard').style.display = 'none';
+    function closeAdminCustomerDetail() {
+      document.getElementById('adminCustomerDetail').style.display = 'none';
+      selectedCustomerId = null;
     }
 
-    function renderInventory() {
-      var filterCustomer = document.getElementById('filterCustomer').value;
-      var filterCategory = document.getElementById('filterCategory').value;
+    function addItemForSelectedCustomer() {
+      if (!selectedCustomerId) return;
+      document.getElementById('itemCustomer').value = selectedCustomerId;
+      openModal('itemModal');
+    }
+
+    function renderAdminInventory() {
+      var customerFilter = document.getElementById('adminInvCustomerFilter').value;
+      var categoryFilter = document.getElementById('adminInvCategoryFilter').value;
+      var statusFilter = document.getElementById('adminInvStatusFilter').value;
       
       var filtered = inventory.filter(function(item) {
-        if (filterCustomer && item.user_id !== filterCustomer) return false;
-        if (filterCategory && item.category !== filterCategory) return false;
+        if (customerFilter && item.user_id !== customerFilter) return false;
+        if (categoryFilter && item.category !== categoryFilter) return false;
+        if (statusFilter && item.status !== statusFilter) return false;
         return true;
       });
       
@@ -1303,34 +1397,141 @@
       var totalValue = 0;
       
       filtered.forEach(function(item) {
-        var customerCol = '';
-        if (userRole === 'admin') {
-          var customer = customers.find(function(c) { return c.id === item.user_id; });
-          customerCol = '<td>' + (customer ? customer.full_name : 'Unknown') + '</td>';
-        }
-        
-        // Photo thumbnail
+        var customer = customers.find(function(c) { return c.id === item.user_id; });
         var photoHtml = item.photo_url 
           ? '<img src="' + item.photo_url + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer" onclick="viewPhoto(\'' + item.photo_url + '\')">'
           : '<span style="color:var(--text-muted);font-size:11px">No photo</span>';
-        
-        // Action buttons - Edit and Delete for non-submitted items
-        var actionBtns = '';
-        if (item.status !== 'submitted' || userRole === 'admin') {
-          actionBtns += '<button class="action-btn" onclick="editItem(' + item.id + ')" style="margin-right:6px">Edit</button>';
-          actionBtns += '<button class="action-btn danger" onclick="deleteItem(' + item.id + ')">Delete</button>';
-        } else {
-          actionBtns = '<span style="color:var(--text-muted);font-size:12px">Submitted</span>';
-        }
+        var statusBadge = item.status === 'submitted'
+          ? '<span class="status-badge received">Submitted</span>'
+          : '<span class="status-badge" style="background:var(--accent);color:#fff">Pending</span>';
         
         html += '<tr>';
-        html += '<td style="font-family:Space Mono,monospace;font-size:12px">' + item.item_id + '</td>';
-        html += customerCol;
+        html += '<td style="font-family:monospace;font-size:11px">' + item.item_id + '</td>';
+        html += '<td>' + (customer ? customer.full_name : 'Unknown') + '</td>';
         html += '<td>' + photoHtml + '</td>';
         html += '<td>' + item.description + '</td>';
         html += '<td style="text-transform:capitalize">' + item.category + '</td>';
         html += '<td class="weight-cell">' + (item.weight || 0) + ' lbs</td>';
         html += '<td class="value-cell">$' + (item.value || 0).toLocaleString() + '</td>';
+        html += '<td>' + statusBadge + '</td>';
+        html += '<td><button class="action-btn" onclick="editItem(' + item.id + ')">Edit</button> <button class="action-btn danger" onclick="deleteItem(' + item.id + ')">Del</button></td>';
+        html += '</tr>';
+        
+        totalWeight += item.weight || 0;
+        totalValue += item.value || 0;
+      });
+      
+      document.getElementById('adminInventoryTable').innerHTML = html || '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted)">No items match filter</td></tr>';
+      document.getElementById('adminInvTotalItems').textContent = filtered.length;
+      document.getElementById('adminInvTotalWeight').textContent = totalWeight.toFixed(1) + ' lbs';
+      document.getElementById('adminInvTotalValue').textContent = '$' + totalValue.toLocaleString();
+    }
+
+    function populateAdminDropdowns() {
+      var customerList = customers.filter(function(c) { return c.role !== 'admin'; });
+      var opts = '<option value="">All Customers</option>';
+      customerList.forEach(function(c) {
+        opts += '<option value="' + c.id + '">' + (c.full_name || 'Unknown') + '</option>';
+      });
+      document.getElementById('adminInvCustomerFilter').innerHTML = opts;
+      
+      // Also populate the item modal customer dropdown
+      var modalOpts = '<option value="">Select Customer...</option>';
+      customerList.forEach(function(c) {
+        modalOpts += '<option value="' + c.id + '">' + (c.full_name || 'Unknown') + '</option>';
+      });
+      document.getElementById('itemCustomer').innerHTML = modalOpts;
+    }
+
+    // ==================== CUSTOMER RENDERING ====================
+    function renderCustomerInterface() {
+      var totalWeight = 0;
+      var totalValue = 0;
+      var pendingCount = 0;
+      
+      inventory.forEach(function(item) {
+        totalWeight += item.weight || 0;
+        totalValue += item.value || 0;
+        if (item.status !== 'submitted') pendingCount++;
+      });
+      
+      var allSubmitted = inventory.length > 0 && inventory.every(function(i) { return i.status === 'submitted'; });
+      var statusText = inventory.length === 0 ? 'No Items' : (allSubmitted ? 'Submitted' : 'Pending');
+      
+      // Update customer stats
+      document.getElementById('customerStatWeight').textContent = totalWeight.toFixed(1) + ' lbs';
+      document.getElementById('customerStatItems').textContent = inventory.length;
+      document.getElementById('customerStatValue').textContent = '$' + totalValue.toLocaleString();
+      document.getElementById('customerStatStatus').textContent = statusText;
+      
+      // Update nav badge
+      document.getElementById('customerInventoryCount').textContent = inventory.length;
+      
+      // Show/hide submit button
+      document.getElementById('customerSubmitBtn').style.display = pendingCount > 0 ? '' : 'none';
+      
+      // Render customer tables
+      renderCustomerRecentItems();
+      renderCustomerInventoryTable();
+    }
+
+    function renderCustomerRecentItems() {
+      var recentItems = inventory.slice(0, 5);
+      var html = '';
+      
+      recentItems.forEach(function(item) {
+        var photoHtml = item.photo_url 
+          ? '<img src="' + item.photo_url + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer" onclick="viewPhoto(\'' + item.photo_url + '\')">'
+          : '<span style="color:var(--text-muted);font-size:11px">No photo</span>';
+        var statusBadge = item.status === 'submitted'
+          ? '<span class="status-badge received">Submitted</span>'
+          : '<span class="status-badge" style="background:var(--accent);color:#fff">Pending</span>';
+        var actionBtn = item.status !== 'submitted'
+          ? '<button class="action-btn" onclick="editItem(' + item.id + ')">Edit</button>'
+          : '<span style="color:var(--text-muted);font-size:11px">Locked</span>';
+        
+        html += '<tr>';
+        html += '<td style="font-family:monospace;font-size:11px">' + item.item_id + '</td>';
+        html += '<td>' + photoHtml + '</td>';
+        html += '<td>' + item.description + '</td>';
+        html += '<td class="weight-cell">' + (item.weight || 0) + ' lbs</td>';
+        html += '<td class="value-cell">$' + (item.value || 0).toLocaleString() + '</td>';
+        html += '<td>' + statusBadge + '</td>';
+        html += '<td>' + actionBtn + '</td>';
+        html += '</tr>';
+      });
+      
+      document.getElementById('customerRecentItemsTable').innerHTML = html || '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted)">No items yet. Click "Add Item" to get started!</td></tr>';
+    }
+
+    function renderCustomerInventoryTable() {
+      var html = '';
+      var totalWeight = 0;
+      var totalValue = 0;
+      
+      inventory.forEach(function(item) {
+        var photoHtml = item.photo_url 
+          ? '<img src="' + item.photo_url + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer" onclick="viewPhoto(\'' + item.photo_url + '\')">'
+          : '<span style="color:var(--text-muted);font-size:11px">No photo</span>';
+        var statusBadge = item.status === 'submitted'
+          ? '<span class="status-badge received">Submitted</span>'
+          : '<span class="status-badge" style="background:var(--accent);color:#fff">Pending</span>';
+        
+        var actionBtns = '';
+        if (item.status !== 'submitted') {
+          actionBtns = '<button class="action-btn" onclick="editItem(' + item.id + ')">Edit</button> <button class="action-btn danger" onclick="deleteItem(' + item.id + ')">Del</button>';
+        } else {
+          actionBtns = '<span style="color:var(--text-muted);font-size:11px">Locked</span>';
+        }
+        
+        html += '<tr>';
+        html += '<td style="font-family:monospace;font-size:11px">' + item.item_id + '</td>';
+        html += '<td>' + photoHtml + '</td>';
+        html += '<td>' + item.description + '</td>';
+        html += '<td style="text-transform:capitalize">' + item.category + '</td>';
+        html += '<td class="weight-cell">' + (item.weight || 0) + ' lbs</td>';
+        html += '<td class="value-cell">$' + (item.value || 0).toLocaleString() + '</td>';
+        html += '<td>' + statusBadge + '</td>';
         html += '<td>' + actionBtns + '</td>';
         html += '</tr>';
         
@@ -1338,15 +1539,10 @@
         totalValue += item.value || 0;
       });
       
-      var emptyColspan = userRole === 'admin' ? '8' : '7';
-      document.getElementById('inventoryTable').innerHTML = html || '<tr><td colspan="' + emptyColspan + '" style="text-align:center;padding:40px">No items</td></tr>';
-      document.getElementById('totalItems').textContent = filtered.length;
-      document.getElementById('totalWeight').textContent = totalWeight.toFixed(1) + ' lbs';
-      document.getElementById('totalValue').textContent = '$' + totalValue.toLocaleString();
-    }
-
-    function viewPhoto(url) {
-      window.open(url, '_blank');
+      document.getElementById('customerInventoryTable').innerHTML = html || '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted)">No items yet</td></tr>';
+      document.getElementById('customerInvTotalItems').textContent = inventory.length;
+      document.getElementById('customerInvTotalWeight').textContent = totalWeight.toFixed(1) + ' lbs';
+      document.getElementById('customerInvTotalValue').textContent = '$' + totalValue.toLocaleString();
     }
 
     function renderDocs() {
@@ -1356,13 +1552,78 @@
         html += '<tr>';
         html += '<td>' + doc.doc_title + '</td>';
         html += '<td>' + date + '</td>';
-        html += '<td style="font-family:Space Mono,monospace;font-style:italic">' + doc.signature + '</td>';
+        html += '<td style="font-family:monospace;font-style:italic">' + doc.signature + '</td>';
         html += '<td><button class="action-btn" onclick="downloadDoc(\'' + doc.doc_type + '\',\'' + doc.doc_title + '\',\'' + doc.signature + '\',\'' + doc.signed_at + '\')">Download</button></td>';
         html += '</tr>';
       });
       
-      document.getElementById('docsTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text-muted)">No documents</td></tr>';
+      document.getElementById('customerDocsTable').innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text-muted)">No documents</td></tr>';
     }
+
+    function viewPhoto(url) {
+      window.open(url, '_blank');
+    }
+
+    function refreshData() {
+      loadData();
+    }
+
+    // ==================== NAVIGATION ====================
+    function navigateTo(pageId) {
+      document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+      document.getElementById(pageId).classList.add('active');
+      
+      // Update nav
+      var navSection = userRole === 'admin' ? '#adminNav' : '#customerNav';
+      document.querySelectorAll(navSection + ' .nav-item').forEach(function(n) { n.classList.remove('active'); });
+      var navItem = document.querySelector(navSection + ' .nav-item[data-page="' + pageId + '"]');
+      if (navItem) navItem.classList.add('active');
+      
+      // Close mobile menu
+      if (window.innerWidth <= 768 && typeof toggleMobileMenu === 'function') {
+        var sidebar = document.querySelector('.sidebar');
+        if (sidebar.classList.contains('open')) {
+          toggleMobileMenu();
+        }
+      }
+    }
+
+    function populateDropdowns() {
+      // This is kept for backwards compatibility but main dropdowns are in populateAdminDropdowns
+    }
+
+    // ==================== MODALS ====================
+    function openModal(id) {
+      document.getElementById(id).classList.add('active');
+      // Populate customer dropdown if admin
+      if (userRole === 'admin') {
+        populateAdminDropdowns();
+      }
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+      clearItemForm();
+    }
+
+    // ==================== NAVIGATION EVENT LISTENERS ====================
+    document.querySelectorAll('.nav-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        var page = this.getAttribute('data-page');
+        if (!page) return;
+        navigateTo(page);
+      });
+    });
+
+    // Close modal on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(function(m) {
+      m.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('active');
+          clearItemForm();
+        }
+      });
+    });
 
     function downloadDoc(type, title, sig, date) {
       var content = 'GUINEA CARGO SERVICES\n';
@@ -1379,53 +1640,6 @@
       a.download = type + '_signed.txt';
       a.click();
     }
-
-    // ==================== DROPDOWNS ====================
-    function populateDropdowns() {
-      if (userRole === 'admin') {
-        var opts = '<option value="">Select...</option>';
-        customers.forEach(function(c) {
-          opts += '<option value="' + c.id + '">' + (c.full_name || 'Unknown') + '</option>';
-        });
-        document.getElementById('itemCustomer').innerHTML = opts;
-        document.getElementById('filterCustomer').innerHTML = '<option value="">All</option>' + opts;
-      }
-    }
-
-    // ==================== MODALS ====================
-    function openModal(id) {
-      document.getElementById(id).classList.add('active');
-      populateDropdowns();
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('active');
-    }
-
-    // ==================== NAVIGATION ====================
-    document.querySelectorAll('.nav-item').forEach(function(item) {
-      item.addEventListener('click', function() {
-        var page = this.getAttribute('data-page');
-        if (!page) return;
-        
-        document.querySelectorAll('.nav-item').forEach(function(n) {
-          n.classList.remove('active');
-        });
-        this.classList.add('active');
-        
-        document.querySelectorAll('.page').forEach(function(p) {
-          p.classList.remove('active');
-        });
-        document.getElementById(page).classList.add('active');
-      });
-    });
-
-    // Close modal on overlay click
-    document.querySelectorAll('.modal-overlay').forEach(function(m) {
-      m.addEventListener('click', function(e) {
-        if (e.target === this) this.classList.remove('active');
-      });
-    });
 
     // ==================== EXPORT ====================
     function exportCSV() {
@@ -1495,6 +1709,26 @@
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = 'customers_' + new Date().toISOString().split('T')[0] + '.csv';
+      a.click();
+    }
+
+    function exportSubmitted() {
+      var submittedItems = inventory.filter(function(i) { return i.status === 'submitted'; });
+      var csv = 'ID,Customer,Description,Category,Qty,Weight,Value\n';
+      
+      submittedItems.forEach(function(item) {
+        var customer = customers.find(function(c) { return c.id === item.user_id; });
+        csv += item.item_id + ',"' + (customer ? customer.full_name : '') + '","' + item.description + '",' + item.category + ',' + (item.quantity || 1) + ',' + item.weight + ',' + item.value + '\n';
+      });
+      
+      var totalWeight = 0, totalValue = 0;
+      submittedItems.forEach(function(i) { totalWeight += i.weight || 0; totalValue += i.value || 0; });
+      csv += '\nTOTAL,,' + submittedItems.length + ' items,,' + totalWeight.toFixed(1) + ' lbs,$' + totalValue.toFixed(2) + '\n';
+      
+      var blob = new Blob([csv], {type: 'text/csv'});
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'submitted_items_' + new Date().toISOString().split('T')[0] + '.csv';
       a.click();
     }
 
